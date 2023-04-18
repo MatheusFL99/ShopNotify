@@ -9,7 +9,9 @@ const jwt = require('jsonwebtoken')
 module.exports = class storeController {
   ////////////// CADASTRO ///////////////
   static async register(req, res) {
-    const { name, email, password } = req.body / validações
+    const { name, email, password, confirmpassword } = req.body
+
+    // validações
     if (!name) {
       res.status(422).json({ message: 'Nome é obrigatório!' })
       return

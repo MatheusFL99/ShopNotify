@@ -5,21 +5,35 @@ const getUserByToken = require('../helpers/get-user-by-token')
 const getToken = require('../helpers/get-token')
 
 module.exports = class CouponController {
-  ////////////// CRIAR CUPOM ///////////////
+  ////////////// CRIAR CUPOM //////////////
   static async createCoupon(req, res) {
-    const { porcentage, expDate, qnt } = req.body
+    const { porcentage, expirationDate, availableQuantity } = req.body
 
     // Validações
     if (!porcentage) {
       res.status(422).json({ message: 'Porcentagem é obrigatório!' })
       return
     }
-    if (!expDate) {
+    if (!expirationDate) {
       res.status(422).json({ message: 'Data de expiração é obrigatório!' })
       return
     }
-    if (!qnt) {
+    if (!availableQuantity) {
       res.status(422).json({ message: 'Quantidade é obrigatório!' })
+      return
+    }
+    if (porcentage > 100) {
+      res
+        .status(422)
+        .json({ message: 'Porcentagem não pode ser maior que 100!' })
+      return
+    }
+    if (expirationDate < Date.now()) {
+      res.status(422).json({ message: 'Data de expiração inválida!' })
+      return
+    }
+    if (availableQuantity < 1) {
+      res.status(422).json({ message: 'Quantidade inválida!' })
       return
     }
 
@@ -29,16 +43,16 @@ module.exports = class CouponController {
 
     // Gerar o hash do cupom
     const hash = await bcrypt.hash(
-      `${porcentage}-${expDate}-${qnt}-${Date.now()}`,
+      `${porcentage}-${expirationDate}-${availableQuantity}-${Date.now()}`,
       10
     )
 
     // Salvar o cupom no banco de dados
     const coupon = new Coupon({
-      porcentage,
-      expDate,
-      qnt,
       hash,
+      porcentage,
+      expirationDate,
+      availableQuantity,
       store: {
         id: store._id,
         name: store.name
@@ -54,7 +68,34 @@ module.exports = class CouponController {
     res.json({ hash })
   }
 
-  /////////////// RESGATAR CUPOM ///////////////
+  ////////////// LISTAR CUPONS //////////////
+  static async listCoupons(req, res) {
+    const coupons = await Coupon.find({})
+
+    res.send(coupons)
+  }
+
+  ////////////// GET CUPOM PELO ID //////////////
+  static async getCouponById(req, res) {
+    const id = req.params.id
+
+    // verificar se o ID é válido
+    if (!ObjectId(id)) {
+      res.status(422).json({ message: 'ID inválido!' })
+      return
+    }
+
+    // verificar se o cupom existe
+    const coupon = await Coupon.findById({ _id: id })
+    if (!coupon) {
+      res.status(422).json({ message: 'Cupom não encontrado!' })
+      return
+    }
+
+    res.status(200).json({ coupon })
+  }
+
+  ////////////// RESGATAR CUPOM //////////////
   static async redeemCoupon(req, res) {
     const { hash } = req.body
     const coupon = await Coupon.findOne({ hash })
@@ -70,30 +111,33 @@ module.exports = class CouponController {
     const user = await getUserByToken(token)
 
     // Verificar se o cupom existe
-
     if (!coupon) {
       res.status(422).json({ message: 'Cupom não encontrado!' })
       return
     }
 
-    // Verificar se o cupom já foi resgatado
-    if (coupon.redeemed) {
-      res.status(422).json({ message: 'Cupom já foi resgatado!' })
+    // Verificar se ainda tem cupons disponíveis
+    if (coupon.availableQuantity < 1) {
+      res.status(422).json({ message: 'Cupom indisponível!' })
+      return
+    }
+
+    // Verificar se o cupom já foi resgatado pelo usuário
+    if (coupon.users.includes(user._id)) {
+      res.status(422).json({ message: 'Cupom já resgatado!' })
       return
     }
 
     // Verificar se o cupom já expirou
-    if (coupon.expires < Date.now()) {
-      res.status(422).json({ message: 'Cupom expirou!' })
+    if (coupon.expirationDate < Date.now()) {
+      res.status(422).json({ message: 'Cupom expirado!' })
       return
     }
 
-    // Atualizar o cupom para resgatado
-    coupon.reedemed = true
-    coupon.reedemBy = {
-      id: user._id,
-      name: user.name
-    }
+    // Atualizar cupom com o resgate
+    coupon.availableQuantity--
+    coupon.users.push(user._id)
+    coupon.reedemDate.push(Date.now())
     try {
       const updatedCoupon = await coupon.save()
       res

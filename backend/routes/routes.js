@@ -19,5 +19,6 @@ router.post('/stores/login', storeController.login)
 // rotas definidas para api cupons
 router.post('/coupons/create', verifyStore, couponController.createCoupon)
 router.post('/coupons/redeem', verifyUser, couponController.redeemCoupon)
+router.post('/coupons/list', verifyStore, couponController.listCoupons)
 
 module.exports = router

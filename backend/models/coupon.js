@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const couponSchema = new mongoose.Schema(
   {
-    code: {
+    hash: {
       type: String,
       required: true,
       unique: true
@@ -40,17 +40,17 @@ const couponSchema = new mongoose.Schema(
       type: Boolean,
       default: true
     },
-    reedemBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    },
-    reedemed: {
-      type: Boolean,
-      default: false
-    },
-    reedemDate: {
-      type: Date
-    }
+    reedemBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      }
+    ],
+    reedemDate: [
+      {
+        type: Date
+      }
+    ]
   },
   { timestamps: true }
 )
