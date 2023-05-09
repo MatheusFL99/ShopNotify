@@ -11,7 +11,6 @@ module.exports = class CouponController {
     const { discount, expirationDate, availableQuantity } = req.body
 
     // Validações
-    if (!porcentage) {
     if (!discount) {
       res
         .status(422)
