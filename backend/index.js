@@ -2,12 +2,20 @@ const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
-const dotenv = require('dotenv')
 const routes = require('./routes/routes')
 require('dotenv').config()
 
 const app = express()
 app.use(cors())
+
+app.get('/', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  )
+  res.send('Hello World!')
+})
 
 // Configuração do middleware Body Parser
 app.use(bodyParser.json())
@@ -34,7 +42,3 @@ mongoose
 
 // routes
 app.use('/api', routes)
-
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
