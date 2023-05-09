@@ -1,4 +1,5 @@
 const Coupon = require('../models/coupon')
+const ObjectId = require('mongoose').Types.ObjectId.isValid
 const bcrypt = require('bcryptjs')
 const getStoreByToken = require('../helpers/get-store-by-token')
 const getUserByToken = require('../helpers/get-user-by-token')
@@ -7,11 +8,14 @@ const getToken = require('../helpers/get-token')
 module.exports = class CouponController {
   ////////////// CRIAR CUPOM //////////////
   static async createCoupon(req, res) {
-    const { porcentage, expirationDate, availableQuantity } = req.body
+    const { discount, expirationDate, availableQuantity } = req.body
 
     // Validações
     if (!porcentage) {
-      res.status(422).json({ message: 'Porcentagem é obrigatório!' })
+    if (!discount) {
+      res
+        .status(422)
+        .json({ message: 'Porcentagem de desconto é obrigatório!' })
       return
     }
     if (!expirationDate) {
@@ -22,10 +26,10 @@ module.exports = class CouponController {
       res.status(422).json({ message: 'Quantidade é obrigatório!' })
       return
     }
-    if (porcentage > 100) {
-      res
-        .status(422)
-        .json({ message: 'Porcentagem não pode ser maior que 100!' })
+    if (discount > 100) {
+      res.status(422).json({
+        message: 'Porcentagem de desconto não pode ser maior que 100!'
+      })
       return
     }
     if (expirationDate < Date.now()) {
@@ -43,29 +47,29 @@ module.exports = class CouponController {
 
     // Gerar o hash do cupom
     const hash = await bcrypt.hash(
-      `${porcentage}-${expirationDate}-${availableQuantity}-${Date.now()}`,
+      `${discount}-${expirationDate}-${availableQuantity}-${Date.now()}`,
       10
     )
 
     // Salvar o cupom no banco de dados
     const coupon = new Coupon({
       hash,
-      porcentage,
+      discount,
       expirationDate,
       availableQuantity,
       store: {
-        id: store._id,
+        _id: store.id,
         name: store.name
       }
     })
     try {
       const newCoupon = await coupon.save()
       res.status(200).json({ message: 'Coupon criado com sucesso!', newCoupon })
+      return
     } catch (err) {
       res.status(500).json({ message: err })
+      return
     }
-
-    res.json({ hash })
   }
 
   ////////////// LISTAR CUPONS //////////////
