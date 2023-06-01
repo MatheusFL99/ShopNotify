@@ -98,6 +98,34 @@ module.exports = class CouponController {
     res.status(200).json({ coupon })
   }
 
+  ////////////// GET CUPOM PELA SOTRE //////////////
+  static async getCouponsByStore(req, res) {
+    const storeId = req.params.storeId
+
+    // verificar se o ID é válido
+    if (!ObjectId(storeId)) {
+      res.status(422).json({ message: 'ID inválido!' })
+      return
+    }
+
+    // verificar se o cupom existe
+    const coupon = await Coupon.findById({ _id: id })
+    if (!coupon) {
+      res.status(422).json({ message: 'Cupom não encontrado!' })
+      return
+    }
+
+    // verificar se o cupom pertence a loja
+    if (coupon.store._id !== storeId) {
+      res.status(422).json({ message: 'Cupom não encontrado!' })
+      return
+    }
+
+    // retornar todos os cupons da loja
+    const coupons = await Coupon.find({ store: { _id: storeId } })
+    res.status(200).json({ coupons })
+  }
+
   ////////////// RESGATAR CUPOM //////////////
   static async redeemCoupon(req, res) {
     const { hash } = req.body

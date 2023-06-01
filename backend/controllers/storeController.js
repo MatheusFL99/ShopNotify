@@ -1,8 +1,6 @@
 const Store = require('../models/store')
-const Coupon = require('../models/coupon')
 const bcrypt = require('bcryptjs')
 const createStoreToken = require('../helpers/create-store-token')
-const getStoreByToken = require('../helpers/get-store-by-token')
 const getToken = require('../helpers/get-token')
 const jwt = require('jsonwebtoken')
 
@@ -150,54 +148,5 @@ module.exports = class storeController {
     }
 
     res.status(200).json(store)
-  }
-
-  ////////////// CRIAR CUPOM ///////////////
-  static async createCoupon(req, res) {
-    const { porcentage, expDate, qnt } = req.body
-
-    // Validações
-    if (!porcentage) {
-      res.status(422).json({ message: 'Porcentagem é obrigatório!' })
-      return
-    }
-    if (!expDate) {
-      res.status(422).json({ message: 'Data de expiração é obrigatório!' })
-      return
-    }
-    if (!qnt) {
-      res.status(422).json({ message: 'Quantidade é obrigatório!' })
-      return
-    }
-
-    // Pegar o token da loja
-    const token = getToken(req)
-    const store = await getStoreByToken(token)
-
-    // Gerar o hash do cupom
-    const hash = await bcrypt.hash(
-      `${porcentage}-${expDate}-${qnt}-${Date.now()}`,
-      10
-    )
-
-    // Salvar o cupom no banco de dados
-    const coupon = new Coupon({
-      porcentage,
-      expDate,
-      qnt,
-      hash,
-      store: {
-        id: store._id,
-        name: store.name
-      }
-    })
-    try {
-      const newCoupon = await coupon.save()
-      res.status(200).json({ message: 'Coupon criado com sucesso!', newCoupon })
-    } catch (err) {
-      res.status(500).json({ message: err })
-    }
-
-    res.json({ hash })
   }
 }

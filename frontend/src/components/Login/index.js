@@ -7,13 +7,16 @@ import {
   StyleSheet
 } from 'react-native'
 import { MaterialIcons, Ionicons } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 
-const LoginUser = ({ navigation }) => {
+const LoginUser = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const navigation = useNavigation()
 
   const handleLogin = () => {
     // Lógica de autenticação aqui
+    navigation.navigate('Produtos')
   }
 
   return (

@@ -2,6 +2,7 @@ const router = require('express').Router()
 const userController = require('../controllers/userController')
 const storeController = require('../controllers/storeController')
 const couponController = require('../controllers/couponController')
+const productController = require('../controllers/productController')
 
 const verifyStore = require('../helpers/verify-store-token')
 const verifyUser = require('../helpers/verify-user-token')
@@ -20,5 +21,10 @@ router.post('/stores/login', storeController.login)
 router.post('/coupons/create', verifyStore, couponController.createCoupon)
 router.post('/coupons/redeem', verifyUser, couponController.redeemCoupon)
 router.post('/coupons/list', verifyStore, couponController.listCoupons)
+router.get('/coupons/:id', couponController.getCouponById)
+router.get('/coupons/store/:id', couponController.getCouponsByStore)
+
+// rotas definidas para a api products
+router.post('/products/create', verifyStore, productController.createProduct)
 
 module.exports = router
