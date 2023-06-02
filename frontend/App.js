@@ -1,4 +1,3 @@
-import { SafeAreaView, StyleSheet, Switch, Text, View } from 'react-native'
 import React from 'react'
 import RegisterUser from './src/components/Cadastro'
 import LoginUser from './src/components/Login'
@@ -21,11 +20,3 @@ export default function App() {
     </NavigationContainer>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#e5e5e5',
-    padding: 80
-  }
-})

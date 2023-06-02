@@ -22,7 +22,7 @@ const WelcomePage = () => {
             color="white"
             style={styles.buttonIcon}
           />
-          <Text style={styles.buttonText}>Login com E-mail</Text>
+          <Text style={styles.buttonText}>Entrar com E-mail</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#3b5998' }]}
@@ -34,7 +34,7 @@ const WelcomePage = () => {
             color="white"
             style={styles.buttonIcon}
           />
-          <Text style={styles.buttonText}>Login com Facebook</Text>
+          <Text style={styles.buttonText}>Entrar com Facebook</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#db4a39' }]}
@@ -46,7 +46,7 @@ const WelcomePage = () => {
             color="white"
             style={styles.buttonIcon}
           />
-          <Text style={styles.buttonText}>Login com Google</Text>
+          <Text style={styles.buttonText}>Entrar com Google</Text>
         </TouchableOpacity>
       </View>
     </View>
