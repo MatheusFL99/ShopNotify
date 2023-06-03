@@ -7,7 +7,7 @@ const WelcomePage = () => {
   const navigation = useNavigation()
 
   const handleEmailLogin = () => {
-    navigation.navigate('Login')
+    navigation.navigate('Cadastro')
   }
 
   return (

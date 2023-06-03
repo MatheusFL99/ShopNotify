@@ -14,9 +14,23 @@ const LoginUser = () => {
   const [password, setPassword] = useState('')
   const navigation = useNavigation()
 
-  const handleLogin = () => {
-    // Lógica de autenticação aqui
-    navigation.navigate('Produtos')
+  handleLogin = () => {
+    fetch('http://192.168.15.117:5000/api/users/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data)
+        this.props.navigation.navigate('Produtos')
+      })
+      .catch(error => console.log(error))
   }
 
   return (

@@ -19,7 +19,7 @@ const storeSchema = new mongoose.Schema({
       ref: 'Product'
     }
   ],
-  cupons: [
+  coupons: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Coupon'

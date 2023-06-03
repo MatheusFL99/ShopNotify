@@ -17,7 +17,6 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-// Configuração do middleware Body Parser
 app.use(bodyParser.json())
 
 // Inicialização do servidor
