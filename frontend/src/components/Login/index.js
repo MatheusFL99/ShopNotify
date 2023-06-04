@@ -6,7 +6,7 @@ import {
   Text,
   StyleSheet
 } from 'react-native'
-import { MaterialIcons, Ionicons } from '@expo/vector-icons'
+import { MaterialIcons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 
 const LoginUser = () => {
@@ -14,23 +14,37 @@ const LoginUser = () => {
   const [password, setPassword] = useState('')
   const navigation = useNavigation()
 
-  handleLogin = () => {
-    fetch('http://192.168.15.117:5000/api/users/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email: email,
-        password: password
-      })
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log(data)
-        this.props.navigation.navigate('Produtos')
-      })
-      .catch(error => console.log(error))
+  const handleLogin = async () => {
+    try {
+      const response = await fetch(
+        'http://192.168.15.117:5000/api/users/login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password
+          })
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Login failed')
+      }
+
+      const data = await response.json()
+      navigation.navigate('Produtos')
+      console.log(data)
+    } catch (error) {
+      console.log(error)
+      setError('Login failed')
+    }
+  }
+
+  handleDontHaveAccount = () => {
+    navigation.navigate('Cadastro')
   }
 
   return (
@@ -67,21 +81,9 @@ const LoginUser = () => {
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.goBackButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Ionicons
-          name="arrow-back"
-          size={24}
-          color="white"
-          style={styles.goBackIcon}
-        />
-        <Text style={styles.buttonText}>Voltar</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => console.log('Não possui cadastro')}>
+      <TouchableOpacity onPress={handleDontHaveAccount}>
         <Text style={styles.registerText}>
-          Não possui cadastro? Clique aqui!
+          Não possui uma conta? <Text style={styles.click}>Clique aqui!</Text>
         </Text>
       </TouchableOpacity>
     </View>
@@ -93,18 +95,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    backgroundColor: '#f5f5f5'
+    paddingHorizontal: 30
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    width: '100%',
+    height: 50,
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 8,
+    borderRadius: 5,
     marginBottom: 20,
-    paddingHorizontal: 10,
-    backgroundColor: 'white'
+    paddingHorizontal: 10
   },
   inputIcon: {
     marginRight: 10
@@ -114,22 +116,22 @@ const styles = StyleSheet.create({
     height: 40
   },
   loginButton: {
-    backgroundColor: '#2196f3',
-    borderRadius: 8,
-    height: 40,
+    backgroundColor: '#f4511e',
+    width: '100%',
+    height: 45,
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
+    borderRadius: 5,
     marginBottom: 10
   },
   goBackButton: {
-    flexDirection: 'row',
     backgroundColor: '#888',
-    borderRadius: 8,
+    flexDirection: 'row',
+    width: '100%',
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
+    borderRadius: 5,
     marginBottom: 10
   },
   goBackIcon: {
@@ -141,9 +143,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   registerText: {
-    color: '#888',
-    fontSize: 14,
-    marginTop: 10
+    fontSize: 16,
+    marginTop: 20
+  },
+  click: {
+    color: '#f4511e'
   }
 })
 

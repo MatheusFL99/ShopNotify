@@ -1,4 +1,4 @@
-import { SafeAreaView, Switch, Text, View } from 'react-native'
+import { SafeAreaView, Text, View } from 'react-native'
 import ProductsList from './ProductsList'
 
 export default function ProductsPage() {

@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   TouchableOpacity,
   StyleSheet
 } from 'react-native'
@@ -14,25 +13,35 @@ const RegisterUser = ({ navigation }) => {
   const [password, setPassword] = useState('')
   const [confirmpassword, setConfirmpassword] = useState('')
 
-  const handleRegister = () => {
-    fetch('http://192.168.15.117:5000/api/users/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        name: name,
-        email: email,
-        password: password,
-        confirmpassword: confirmpassword
-      })
-    })
-      .then(response => response.json())
-      .then(data => {
-        navigation.navigate('Produtos')
-        console.log(data)
-      })
-      .catch(error => console.log(error))
+  const handleRegister = async () => {
+    try {
+      const response = await fetch(
+        'http://192.168.15.117:5000/api/users/register',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            password: password,
+            confirmpassword: confirmpassword
+          })
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Registration failed')
+      }
+
+      const data = await response.json()
+      console.log(data)
+      navigation.navigate('Produtos')
+    } catch (error) {
+      console.log(error)
+      setError('Registration failed')
+    }
   }
 
   const handleHaveAccount = () => {
@@ -71,7 +80,9 @@ const RegisterUser = ({ navigation }) => {
         <Text style={styles.buttonText}>Registrar</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleHaveAccount}>
-        <Text style={styles.linkText}>Já possui cadastro? Clique aqui!</Text>
+        <Text style={styles.linkText}>
+          Já possui cadastro? <Text style={styles.click}>Clique aqui!</Text>
+        </Text>
       </TouchableOpacity>
     </View>
   )
@@ -115,8 +126,10 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline'
   },
   linkText: {
-    color: '#f4511e',
     fontSize: 16,
     marginTop: 20
+  },
+  click: {
+    color: '#f4511e'
   }
 })
