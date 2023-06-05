@@ -82,7 +82,7 @@ export default function ProductCard({
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         >
           <Image
-            source={require('../../../assets/QRCode.png')}
+            source={require('../../../../assets/QRCode.png')}
             style={{ width: 200, height: 200 }}
           />
           <TouchableOpacity onPress={closeModal} style={{ marginTop: 20 }}>

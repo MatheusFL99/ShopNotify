@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import {
   View,
   Text,
@@ -31,16 +31,10 @@ const RegisterUser = ({ navigation }) => {
         }
       )
 
-      if (!response.ok) {
-        throw new Error('Registration failed')
-      }
-
       const data = await response.json()
       console.log(data)
-      navigation.navigate('Produtos')
     } catch (error) {
       console.log(error)
-      setError('Registration failed')
     }
   }
 

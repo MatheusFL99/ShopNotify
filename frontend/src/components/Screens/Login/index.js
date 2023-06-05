@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import {
   View,
   TextInput,
@@ -8,11 +8,13 @@ import {
 } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
+import { AuthContext } from '../../../context/AuthContext'
 
 const LoginUser = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const navigation = useNavigation()
+  const { login } = useContext(AuthContext)
 
   const handleLogin = async () => {
     try {
@@ -78,7 +80,10 @@ const LoginUser = () => {
           value={password}
         />
       </View>
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+      <TouchableOpacity
+        style={styles.loginButton}
+        onPress={() => login(email, password)}
+      >
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleDontHaveAccount}>
