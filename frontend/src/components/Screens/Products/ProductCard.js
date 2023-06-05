@@ -9,13 +9,18 @@ export default function ProductCard({
   title,
   price,
   discount,
-  finalPrice,
   description,
   id
 }) {
-  // const product = products[0]; depois os produtos vão vir do backend
-  const formattedPrice = price.toFixed(2).replace('.', ',')
-  const formattedFinalPrice = finalPrice.toFixed(2).replace('.', ',')
+  const FinalPrice = price - (price * discount) / 100
+  const formattedPrice = price.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  })
+  const formattedPriceFinal = FinalPrice.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  })
 
   const [modalVisible, setModalVisible] = useState(false)
   const [qrValue, setQrValue] = useState('')
@@ -51,12 +56,12 @@ export default function ProductCard({
         </Text>
         <Text className={'text-lg font-semibold dark:text-white'}>{title}</Text>
         <Text className={'text-1xl dark:text-white line-through'}>
-          R$ {formattedPrice}
+          {formattedPrice}
         </Text>
         <View className={'flex-row justify-between items-center my-3'}>
           <View className={'flex-row items-center gap-3'}>
             <Text className="text-3xl text-green font-extrabold dark:text-white">
-              R$ {formattedFinalPrice}
+              {formattedPriceFinal}
             </Text>
           </View>
         </View>
@@ -76,7 +81,7 @@ export default function ProductCard({
         </TouchableOpacity>
       </View>
 
-      {/* Modal */}
+      {/* Modal do QRCode */}
       <Modal visible={modalVisible} animationType="slide">
         <View
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}

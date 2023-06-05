@@ -16,35 +16,6 @@ const LoginUser = () => {
   const navigation = useNavigation()
   const { login } = useContext(AuthContext)
 
-  const handleLogin = async () => {
-    try {
-      const response = await fetch(
-        'http://192.168.15.117:5000/api/users/login',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email: email,
-            password: password
-          })
-        }
-      )
-
-      if (!response.ok) {
-        throw new Error('Login failed')
-      }
-
-      const data = await response.json()
-      navigation.navigate('Produtos')
-      console.log(data)
-    } catch (error) {
-      console.log(error)
-      setError('Login failed')
-    }
-  }
-
   handleDontHaveAccount = () => {
     navigation.navigate('Cadastro')
   }

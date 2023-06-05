@@ -26,5 +26,6 @@ router.get('/coupons/store/:id', couponController.getCouponsByStore)
 
 // rotas definidas para a api products
 router.post('/products/create', verifyStore, productController.createProduct)
+router.get('/products/list', productController.listProducts)
 
 module.exports = router

@@ -6,37 +6,14 @@ import {
   TouchableOpacity,
   StyleSheet
 } from 'react-native'
+import { AuthContext } from '../../../context/AuthContext'
 
 const RegisterUser = ({ navigation }) => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmpassword, setConfirmpassword] = useState('')
-
-  const handleRegister = async () => {
-    try {
-      const response = await fetch(
-        'http://192.168.15.117:5000/api/users/register',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            name: name,
-            email: email,
-            password: password,
-            confirmpassword: confirmpassword
-          })
-        }
-      )
-
-      const data = await response.json()
-      console.log(data)
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  const { register } = useContext(AuthContext)
 
   const handleHaveAccount = () => {
     navigation.navigate('Login')
@@ -70,7 +47,10 @@ const RegisterUser = ({ navigation }) => {
         onChangeText={setConfirmpassword}
         value={confirmpassword}
       />
-      <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+      <TouchableOpacity
+        style={styles.registerButton}
+        onPress={() => register(name, email, password, confirmpassword)}
+      >
         <Text style={styles.buttonText}>Registrar</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleHaveAccount}>

@@ -9,6 +9,26 @@ export const AuthProvider = ({ children }) => {
   const [userToken, setUserToken] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
 
+  const register = (name, email, password, confirmpassword) => {
+    setIsLoading(true)
+    axios
+      .post('http://192.168.15.117:5000/api/users/register', {
+        name: name,
+        email: email,
+        password: password,
+        confirmpassword: confirmpassword
+      })
+      .then(res => {
+        console.log(res.data)
+        setUserToken(res.data.token)
+        AsyncStorage.setItem('userToken', res.data.token)
+      })
+      .catch(err => {
+        console.log(err.response.data)
+      })
+    setIsLoading(false)
+  }
+
   const login = (email, password) => {
     setIsLoading(true)
     axios
@@ -24,8 +44,6 @@ export const AuthProvider = ({ children }) => {
       .catch(err => {
         console.log(err.response.data)
       })
-    // setUserToken('abcd')
-    // AsyncStorage.setItem('userToken', 'abcd')
     setIsLoading(false)
   }
 
@@ -34,6 +52,7 @@ export const AuthProvider = ({ children }) => {
     setUserToken(null)
     AsyncStorage.removeItem('userToken')
     setIsLoading(false)
+    console.log('Usuário deslogado')
   }
 
   const isLoggedIn = async () => {
@@ -52,7 +71,9 @@ export const AuthProvider = ({ children }) => {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ login, logout, isLoading, userToken }}>
+    <AuthContext.Provider
+      value={{ register, login, logout, isLoading, userToken }}
+    >
       {children}
     </AuthContext.Provider>
   )
