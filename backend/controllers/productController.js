@@ -132,23 +132,4 @@ module.exports = class productController {
       return
     }
   }
-
-  /////////////// GET PRODUTOS FAVORITOS DE UM USUÁRIO ///////////////
-  static async getFavoriteProducts(req, res) {
-    // Pegar token do usuário
-    const token = getToken(req)
-    const user = await getUserByToken(token)
-
-    try {
-      const favoriteProductIds = user.favoriteProducts.filter(
-        id => id !== 'favorites'
-      )
-      const products = await Product.find({
-        _id: { $in: favoriteProductIds }
-      })
-      res.status(200).json(products)
-    } catch (err) {
-      res.status(500).json({ message: err.message })
-    }
-  }
 }

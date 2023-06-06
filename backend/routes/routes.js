@@ -34,10 +34,5 @@ router.put(
   verifyUser,
   productController.addProductToFavorites
 )
-router.get(
-  '/products/favorites',
-  verifyUser,
-  productController.getFavoriteProducts
-)
 
 module.exports = router
