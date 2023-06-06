@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity, Modal } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { AuthContext } from '../../../context/AuthContext'
 import axios from 'axios'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import defaultUrl from '../../../utils/defaultUrl'
 
 export default function ProductCard({
   image,
@@ -15,6 +15,7 @@ export default function ProductCard({
   store,
   _id
 }) {
+  const defaultURL = defaultUrl()
   const FinalPrice = price - (price * discount) / 100
   const formattedPrice = price.toLocaleString('pt-BR', {
     style: 'currency',
@@ -33,7 +34,7 @@ export default function ProductCard({
     const productId = _id
     await axios
       .put(
-        'http://192.168.15.117:5000/api/products/addtofavorites',
+        `${defaultURL}/products/addtofavorites`,
         {
           productId: productId
         },
@@ -44,6 +45,7 @@ export default function ProductCard({
         }
       )
       .then(res => {
+        console.log('Produto adicionado aos favoritos!')
         setCupomResgatado(true)
         setModalVisible(true)
       })

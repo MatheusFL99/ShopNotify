@@ -1,18 +1,20 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { createContext, useEffect, useState } from 'react'
 import axios from 'axios'
+import defaultUrl from '../utils/defaultUrl'
 import { set } from 'react-native-reanimated'
 
 export const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
+  const defaultURL = defaultUrl()
   const [userToken, setUserToken] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
 
   const register = (name, email, password, confirmpassword) => {
     setIsLoading(true)
     axios
-      .post('http://192.168.15.117:5000/api/users/register', {
+      .post(`${defaultURL}/users/register`, {
         name: name,
         email: email,
         password: password,
@@ -32,7 +34,7 @@ export const AuthProvider = ({ children }) => {
   const login = (email, password) => {
     setIsLoading(true)
     axios
-      .post('http://192.168.15.117:5000/api/users/login', {
+      .post(`${defaultURL}/users/login`, {
         email: email,
         password: password
       })
