@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10
   },
   registerButton: {
-    backgroundColor: '#f4511e',
+    backgroundColor: '#F80032',
     width: '100%',
     height: 50,
     justifyContent: 'center',
@@ -104,6 +104,6 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   click: {
-    color: '#f4511e'
+    color: '#F80032'
   }
 })

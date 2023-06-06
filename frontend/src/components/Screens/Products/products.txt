@@ -1,5 +1,14 @@
 export const products = [
   {
+    "title": "Elvio Cogno Ravera Barolo DOCG 2014",
+    "price": 1199.99,
+    "discount": 10,
+    "description": "The Ravera cru is the most important and prestigious of the Novello area. It is the most complete and structured Barolo of the whole range, with a wide bouquet of herbaceous and spicy notes, and an intense and persistent taste.",
+    "category": "wine",
+    "image": "https://boabebida.com.br/storage/23315/1000002532-standing-front.jpg"
+  }
+
+  {
     "title": "Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops",
     "price": 109.95,
     "discount": 5,

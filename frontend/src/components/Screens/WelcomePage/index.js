@@ -59,18 +59,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
-    backgroundColor: '#ffffff'
+    backgroundColor: '#F80032'
   },
   welcomeText: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#333333'
+    color: 'white'
   },
   loginText: {
     fontSize: 16,
     marginBottom: 10,
-    color: '#666666'
+    color: 'white'
   },
   buttonContainer: {
     width: '100%',
