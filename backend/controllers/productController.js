@@ -1,6 +1,8 @@
 const getStoreByToken = require('../helpers/get-store-by-token')
 const getToken = require('../helpers/get-token')
+const getUserByToken = require('../helpers/get-user-by-token')
 const Product = require('../models/product')
+const User = require('../models/user')
 
 module.exports = class productController {
   /////////////// CRIAR PRODUTO ///////////////
@@ -70,6 +72,83 @@ module.exports = class productController {
     } catch (err) {
       res.status(500).json({ message: err })
       return
+    }
+  }
+
+  /////////////// LISTAR PRODUTOS POR LOJA ///////////////
+  static async getProductsByStore(req, res) {
+    try {
+      const products = await Product.find({ 'store._id': req.params.id })
+      res.status(200).json(products)
+    } catch (err) {
+      res.status(500).json({ message: err })
+      return
+    }
+  }
+
+  /////////////// GET PRODUTO POR ID ///////////////
+  static async getProductById(req, res) {
+    try {
+      const product = await Product.findById(req.params.id)
+      res.status(200).json(product)
+    } catch (err) {
+      res.status(500).json({ message: err })
+      return
+    }
+  }
+
+  /////////////// ADICIONAR PRODUTO AOS FAVORITOS ///////////////
+  static async addProductToFavorites(req, res) {
+    //pegar token do usuário
+
+    const token = getToken(req)
+    const user = await getUserByToken(token)
+
+    const { productId } = req.body
+
+    //validações
+    if (!productId) {
+      res.status(422).json({ message: 'Id do produto é obrigatório!' })
+      return
+    }
+
+    const userAlreadyHasProduct = user.favoriteProducts.includes(productId)
+    if (userAlreadyHasProduct) {
+      res.status(422).json({ message: 'Produto já adicionado aos favoritos!' })
+      return
+    }
+
+    try {
+      const userUpdated = await User.findByIdAndUpdate(
+        { _id: user._id },
+        {
+          $push: { favoriteProducts: productId },
+          new: true
+        }
+      )
+      res.status(201).json(userUpdated.favoriteProducts)
+    } catch (err) {
+      res.status(500).json({ message: err })
+      return
+    }
+  }
+
+  /////////////// GET PRODUTOS FAVORITOS DE UM USUÁRIO ///////////////
+  static async getFavoriteProducts(req, res) {
+    // Pegar token do usuário
+    const token = getToken(req)
+    const user = await getUserByToken(token)
+
+    try {
+      const favoriteProductIds = user.favoriteProducts.filter(
+        id => id !== 'favorites'
+      )
+      const products = await Product.find({
+        _id: { $in: favoriteProductIds }
+      })
+      res.status(200).json(products)
+    } catch (err) {
+      res.status(500).json({ message: err.message })
     }
   }
 }

@@ -5,7 +5,7 @@ const createUserToken = async (user, req, res) => {
   const token = jwt.sign(
     {
       name: user.name,
-      id: user._ida
+      id: user._id
     },
     process.env.JWT_SECRET_USER
   )
