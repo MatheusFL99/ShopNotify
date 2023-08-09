@@ -126,7 +126,61 @@ module.exports = class productController {
           new: true
         }
       )
+
       res.status(201).json(userUpdated.favoriteProducts)
+    } catch (err) {
+      res.status(500).json({ message: err })
+      return
+    }
+  }
+
+  /////////////// REMOVER PRODUTO DOS FAVORITOS ///////////////
+  static async removeProductFromFavorites(req, res) {
+    //pegar token do usuário
+
+    const token = getToken(req)
+    const user = await getUserByToken(token)
+
+    const { productId } = req.body
+
+    //validações
+    if (!productId) {
+      res.status(422).json({ message: 'Id do produto é obrigatório!' })
+      return
+    }
+
+    const userAlreadyHasProduct = user.favoriteProducts.includes(productId)
+    if (!userAlreadyHasProduct) {
+      res
+        .status(422)
+        .json({ message: 'Esse produto não pertence aos seus favoritos!' })
+      return
+    }
+
+    try {
+      const userUpdated = await User.findByIdAndUpdate(
+        { _id: user._id },
+        {
+          $pull: { favoriteProducts: productId }
+        }
+      )
+      res.status(201).json(userUpdated.favoriteProducts)
+    } catch (err) {
+      res.status(500).json({ message: err })
+      return
+    }
+  }
+
+  ////////////// LISTAR PRODUTOS FAVORITADOS DE UM USUÁRIO //////////////
+  static async getFavoriteProducts(req, res) {
+    const token = getToken(req)
+    const user = await getUserByToken(token)
+
+    try {
+      const products = await Product.find({
+        _id: { $in: user.favoriteProducts }
+      })
+      res.status(200).json(products)
     } catch (err) {
       res.status(500).json({ message: err })
       return

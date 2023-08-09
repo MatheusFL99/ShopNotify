@@ -31,6 +31,10 @@ const productSchema = new mongoose.Schema({
     name: {
       type: String,
       required: true
+    },
+    favoritedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
     }
   }
 })

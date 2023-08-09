@@ -3,7 +3,7 @@ import ProductsPage from '../components/Screens/Products/ProductsPage'
 import { createDrawerNavigator } from '@react-navigation/drawer'
 import myCoupons from '../components/Screens/Coupons'
 import CustomDrawer from '../components/CustomDrawer'
-import FavoriteProducts from '../components/Screens/Products/FavoriteProducts'
+import FavoriteProducts from '../components/Screens/Products/FavoriteProducts/FavoriteProductsList'
 
 const Drawer = createDrawerNavigator()
 

@@ -28,9 +28,10 @@ export default function ProductCard({
 
   const [modalVisible, setModalVisible] = useState(false)
   const [cupomResgatado, setCupomResgatado] = useState(false)
+  const [favorited, setFavorited] = useState(false)
   const { userToken } = useContext(AuthContext)
 
-  const reedemCoupon = async (_id, userToken) => {
+  const addtofavorites = async (_id, userToken) => {
     const productId = _id
     await axios
       .put(
@@ -45,9 +46,33 @@ export default function ProductCard({
         }
       )
       .then(res => {
-        console.log('Produto adicionado aos favoritos!')
-        setCupomResgatado(true)
-        setModalVisible(true)
+        console.log('Produto adicionado aos favoritos')
+        console.log(res.data)
+        setFavorited(true)
+      })
+      .catch(err => {
+        console.log(err.response.data)
+      })
+  }
+
+  const removefromfavorites = async (_id, userToken) => {
+    const productId = _id
+    await axios
+      .put(
+        `${defaultURL}/products/removefavorite`,
+        {
+          productId: productId
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`
+          }
+        }
+      )
+      .then(res => {
+        console.log(res.data)
+        setFavorited(false)
+        console.log('Produto removido dos favoritos!')
       })
       .catch(err => {
         console.log(err.response.data)
@@ -56,11 +81,6 @@ export default function ProductCard({
 
   const closeModal = () => {
     setModalVisible(false)
-  }
-
-  const handleResgatarCupom = () => {
-    setCupomResgatado(true)
-    setModalVisible(true)
   }
 
   return (
@@ -101,7 +121,7 @@ export default function ProductCard({
           {description}
         </Text>
         <TouchableOpacity
-          onPress={cupomResgatado ? null : () => reedemCoupon(_id, userToken)}
+          onPress={() => setModalVisible(true)}
           className={`flex-row justify-center rounded-full ${
             cupomResgatado ? 'bg-gray-500' : 'bg-black/90 dark:bg-white/90'
           } p-3 w-10/12 self-center mt-5`}
@@ -124,6 +144,22 @@ export default function ProductCard({
             </Text>
           )}
         </TouchableOpacity>
+
+        {favorited ? (
+          <TouchableOpacity
+            onPress={() => removefromfavorites(_id, userToken)}
+            style={{ alignSelf: 'flex-end', marginTop: 5 }}
+          >
+            <Ionicons name={'star'} size={25} color={'yellow'} />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={() => addtofavorites(_id, userToken)}
+            style={{ alignSelf: 'flex-end', marginTop: 5 }}
+          >
+            <Ionicons name={'star-outline'} size={25} color={'black'} />
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Modal do QRCode */}

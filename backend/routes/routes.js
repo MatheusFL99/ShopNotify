@@ -34,5 +34,15 @@ router.put(
   verifyUser,
   productController.addProductToFavorites
 )
+router.put(
+  '/products/removefavorite',
+  verifyUser,
+  productController.removeProductFromFavorites
+)
+router.get(
+  '/products/favorites',
+  verifyUser,
+  productController.getFavoriteProducts
+)
 
 module.exports = router
