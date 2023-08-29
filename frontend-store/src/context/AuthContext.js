@@ -7,13 +7,13 @@ export const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
   const defaultURL = defaultUrl()
-  const [userToken, setUserToken] = useState(null)
+  const [storeToken, setStoreToken] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
 
   const register = (name, email, password, confirmpassword) => {
     setIsLoading(true)
     axios
-      .post(`${defaultURL}/users/register`, {
+      .post(`${defaultURL}/stores/register`, {
         name: name,
         email: email,
         password: password,
@@ -21,8 +21,8 @@ export const AuthProvider = ({ children }) => {
       })
       .then(res => {
         console.log(res.data)
-        setUserToken(res.data.token)
-        AsyncStorage.setItem('userToken', res.data.token)
+        setStoreToken(res.data.token)
+        AsyncStorage.setItem('storeToken', res.data.token)
       })
       .catch(err => {
         console.log(err.response.data)
@@ -33,14 +33,14 @@ export const AuthProvider = ({ children }) => {
   const login = (email, password) => {
     setIsLoading(true)
     axios
-      .post(`${defaultURL}/users/login`, {
+      .post(`${defaultURL}/stores/login`, {
         email: email,
         password: password
       })
       .then(res => {
         console.log(res.data)
-        setUserToken(res.data.token)
-        AsyncStorage.setItem('userToken', res.data.token)
+        setStoreToken(res.data.token)
+        AsyncStorage.setItem('storeToken', res.data.token)
       })
       .catch(err => {
         console.log(err.response.data)
@@ -50,8 +50,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setIsLoading(true)
-    setUserToken(null)
-    AsyncStorage.removeItem('userToken')
+    setStoreToken(null)
+    AsyncStorage.removeItem('storeToken')
     setIsLoading(false)
     console.log('Usuário deslogado')
   }
@@ -59,8 +59,8 @@ export const AuthProvider = ({ children }) => {
   const isLoggedIn = async () => {
     try {
       setIsLoading(true)
-      const userToken = await AsyncStorage.getItem('userToken')
-      setUserToken(userToken)
+      const storeToken = await AsyncStorage.getItem('storeToken')
+      setStoreToken(storeToken)
       setIsLoading(false)
     } catch (error) {
       console.log(error)
@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ register, login, logout, isLoading, userToken }}
+      value={{ register, login, logout, isLoading, storeToken }}
     >
       {children}
     </AuthContext.Provider>
