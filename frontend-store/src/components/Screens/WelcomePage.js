@@ -22,31 +22,7 @@ const WelcomePage = () => {
             color="white"
             style={styles.buttonIcon}
           />
-          <Text style={styles.buttonText}>Entrar com E-mail</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: '#3b5998' }]}
-          onPress={() => console.log('Login com Facebook')}
-        >
-          <FontAwesome
-            name="facebook"
-            size={24}
-            color="white"
-            style={styles.buttonIcon}
-          />
-          <Text style={styles.buttonText}>Entrar com Facebook</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: '#db4a39' }]}
-          onPress={() => console.log('Login com Google')}
-        >
-          <AntDesign
-            name="google"
-            size={24}
-            color="white"
-            style={styles.buttonIcon}
-          />
-          <Text style={styles.buttonText}>Entrar com Google</Text>
+          <Text style={styles.buttonText}>Entrar com CNPJ</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -59,7 +35,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
-    backgroundColor: '#F80032'
+    backgroundColor: '#836FFF'
   },
   welcomeText: {
     fontSize: 24,
@@ -79,7 +55,7 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ff6347',
+    backgroundColor: '#FFFFFF',
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 5,
@@ -90,7 +66,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    color: 'white'
+    color: '#836FFF'
   }
 })
 

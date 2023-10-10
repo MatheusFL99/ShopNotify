@@ -44,5 +44,6 @@ router.get(
   verifyUser,
   productController.getFavoriteProducts
 )
+router.get('/products/myProducts', productController.getAllStoreProducts)
 
 module.exports = router

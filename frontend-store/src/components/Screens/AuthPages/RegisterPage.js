@@ -11,6 +11,7 @@ import { AuthContext } from '../../../context/AuthContext'
 const RegisterUser = ({ navigation }) => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [cnpj, setCnpj] = useState('')
   const [password, setPassword] = useState('')
   const [confirmpassword, setConfirmpassword] = useState('')
   const { register } = useContext(AuthContext)
@@ -23,7 +24,7 @@ const RegisterUser = ({ navigation }) => {
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        placeholder="Nome"
+        placeholder="Razão Social"
         onChangeText={setName}
         value={name}
       />
@@ -32,6 +33,12 @@ const RegisterUser = ({ navigation }) => {
         placeholder="Email"
         onChangeText={setEmail}
         value={email}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="CNPJ"
+        onChangeText={setCnpj}
+        value={cnpj}
       />
       <TextInput
         style={styles.input}
@@ -49,7 +56,7 @@ const RegisterUser = ({ navigation }) => {
       />
       <TouchableOpacity
         style={styles.registerButton}
-        onPress={() => register(name, email, password, confirmpassword)}
+        onPress={() => register(name, email, cnpj, password, confirmpassword)}
       >
         <Text style={styles.buttonText}>Registrar</Text>
       </TouchableOpacity>
@@ -81,7 +88,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10
   },
   registerButton: {
-    backgroundColor: '#F80032',
+    backgroundColor: '#836FFF',
     width: '100%',
     height: 50,
     justifyContent: 'center',
@@ -104,6 +111,6 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   click: {
-    color: '#F80032'
+    color: '#836FFF'
   }
 })

@@ -186,4 +186,16 @@ module.exports = class productController {
       return
     }
   }
+
+  ////////////// LISTAR PRODUTOS DE UMA LOJA //////////////
+  static async getAllStoreProducts(req, res) {
+    const token = getToken(req)
+    const store = await getStoreByToken(token)
+
+    const products = await Product.find({ 'store._id': store._id })
+
+    res.status(200).json({
+      products
+    })
+  }
 }

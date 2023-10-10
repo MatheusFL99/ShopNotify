@@ -34,9 +34,14 @@ module.exports = class storeController {
     }
 
     // checa se a loja já existe
-    const storeExists = await Store.findOne({ email: email })
-    if (storeExists) {
+    const storeEmailExists = await Store.findOne({ email: email })
+    if (storeEmailExists) {
       res.status(422).json({ message: 'Esse email já está sendo utilizado!' })
+      return
+    }
+    const storeCnpjExists = await Store.findOne({ cnpj: cnpj })
+    if (storeCnpjExists) {
+      res.status(422).json({ message: 'Esse CNPJ já está sendo utilizado!' })
       return
     }
 
@@ -48,6 +53,7 @@ module.exports = class storeController {
     const store = new Store({
       name,
       email,
+      cnpj,
       password: passwordHash
     })
 

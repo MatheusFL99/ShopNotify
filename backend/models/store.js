@@ -9,6 +9,10 @@ const storeSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  cnpj: {
+    type: String,
+    required: true
+  },
   password: {
     type: String,
     required: true
