@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     height: 40
   },
   loginButton: {
-    backgroundColor: '#F80032',
+    backgroundColor: '#836FFF',
     width: '100%',
     height: 45,
     justifyContent: 'center',
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   click: {
-    color: '#F80032'
+    color: '#836FFF'
   }
 })
 

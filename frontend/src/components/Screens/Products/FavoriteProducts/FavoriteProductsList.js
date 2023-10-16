@@ -3,6 +3,7 @@ import { AuthContext } from '../../../../context/AuthContext'
 import axios from 'axios'
 import defaultUrl from '../../../../utils/defaultUrl'
 import { FlatList } from 'react-native-gesture-handler'
+import FavoriteProductCard from './FavoriteProductCard'
 
 const FavoriteProducts = () => {
   const [favProducts, setFavProducts] = useState([])
@@ -10,18 +11,17 @@ const FavoriteProducts = () => {
   const defaultURL = defaultUrl()
 
   const fetchFavProducts = async () => {
-    await axios
-      .get(`${defaultURL}/products/favorites`, {
+    try {
+      const response = await axios.get(`${defaultURL}/products/myfavorites`, {
         headers: {
           Authorization: `Bearer ${userToken}`
         }
       })
-      .then(res => {
-        setFavProducts(res.data)
-      })
-      .catch(err => {
-        console.log(err.response.data)
-      })
+
+      setFavProducts(response.data)
+    } catch (error) {
+      console.log(error.response.data)
+    }
   }
 
   useEffect(() => {
@@ -29,15 +29,14 @@ const FavoriteProducts = () => {
   }, [])
 
   return (
-    <FlatList>
+    <FlatList
       data={favProducts}
       keyExtractor={product => product._id}
-      renderItem={({ item }) => <ProductCard {...item} />}
-      contentContainerStyle=
-      {{
+      renderItem={({ item }) => <FavoriteProductCard {...item} />}
+      contentContainerStyle={{
         paddingHorizontal: 15
       }}
-    </FlatList>
+    />
   )
 }
 

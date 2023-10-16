@@ -40,10 +40,10 @@ router.put(
   productController.removeProductFromFavorites
 )
 router.get(
-  '/products/favorites',
+  '/products/myfavorites',
   verifyUser,
   productController.getFavoriteProducts
 )
-router.get('/products/myProducts', productController.getAllStoreProducts)
+router.get('/products/myproducts', productController.getAllStoreProducts)
 
 module.exports = router

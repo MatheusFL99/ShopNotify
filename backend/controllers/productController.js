@@ -177,13 +177,18 @@ module.exports = class productController {
     const user = await getUserByToken(token)
 
     try {
-      const products = await Product.find({
-        _id: { $in: user.favoriteProducts }
+      if (!user) {
+        throw new Error('Usuário não encontrado')
+      }
+
+      const favoriteProductIds = user.favoriteProducts
+      const favoriteProducts = await Product.find({
+        _id: { $in: favoriteProductIds }
       })
-      res.status(200).json(products)
-    } catch (err) {
-      res.status(500).json({ message: err })
-      return
+
+      res.json(favoriteProducts)
+    } catch (error) {
+      res.status(500).json({ error: 'Erro ao recuperar produtos favoritos' })
     }
   }
 
