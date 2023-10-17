@@ -186,7 +186,7 @@ module.exports = class productController {
         }
       )
 
-      res.status(201).json(userUpdated.favoriteProducts)
+      res.status(200).json(userUpdated.favoriteProducts)
     } catch (err) {
       res.status(500).json({ message: err })
       return
@@ -223,7 +223,7 @@ module.exports = class productController {
           $pull: { favoriteProducts: productId }
         }
       )
-      res.status(201).json(userUpdated.favoriteProducts)
+      res.status(200).json(userUpdated.favoriteProducts)
     } catch (err) {
       res.status(500).json({ message: err })
       return
@@ -236,18 +236,13 @@ module.exports = class productController {
     const user = await getUserByToken(token)
 
     try {
-      if (!user) {
-        throw new Error('Usuário não encontrado')
-      }
-
-      const favoriteProductIds = user.favoriteProducts
-      const favoriteProducts = await Product.find({
-        _id: { $in: favoriteProductIds.map(ObjectId) }
-      }).toArray()
-
-      res.json(favoriteProducts)
-    } catch (error) {
-      res.status(500).json({ error: 'Erro ao recuperar produtos favoritos' })
+      const userWithFavorites = await User.findById(user._id).populate(
+        'favoriteProducts'
+      )
+      res.status(200).json(userWithFavorites.favoriteProducts)
+    } catch (err) {
+      res.status(500).json({ message: err })
+      return
     }
   }
 

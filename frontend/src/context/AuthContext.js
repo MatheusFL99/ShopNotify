@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
   const defaultURL = defaultUrl()
   const [userToken, setUserToken] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [favoriteProducts, setFavoriteProducts] = useState([])
 
   const register = (name, email, password, confirmpassword) => {
     setIsLoading(true)
@@ -67,13 +68,34 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  const updateFavorites = async () => {
+    try {
+      const response = await axios.get(`${defaultURL}/products/favorites`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`
+        }
+      })
+      setFavoriteProducts(response.data)
+    } catch (error) {
+      console.log(error.response.data)
+    }
+  }
+
   useEffect(() => {
     isLoggedIn()
   }, [])
 
   return (
     <AuthContext.Provider
-      value={{ register, login, logout, isLoading, userToken }}
+      value={{
+        register,
+        login,
+        logout,
+        isLoading,
+        userToken,
+        favoriteProducts,
+        updateFavorites
+      }}
     >
       {children}
     </AuthContext.Provider>

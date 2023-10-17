@@ -26,16 +26,18 @@ router.get('/coupons/store/:id', couponController.getCouponsByStore)
 
 // rotas definidas para a api products
 router.post('/products/create', verifyStore, productController.createProduct)
-router.put('/products/edit/:id', verifyStore, productController.editProduct)
+
 router.get(
   '/products/myProducts',
   verifyStore,
   productController.getStoreProducts
 )
 router.get('/products/list', productController.listProducts)
-router.delete('/products/:id', verifyStore, productController.removeProduct)
-router.get('/products/:id', productController.getProductById)
-router.get('/products/store/:id', productController.getProductsByStore)
+router.get(
+  '/products/favorites',
+  verifyUser,
+  productController.getFavoriteProducts
+)
 router.put(
   '/products/addtofavorites',
   verifyUser,
@@ -46,10 +48,9 @@ router.put(
   verifyUser,
   productController.removeProductFromFavorites
 )
-router.get(
-  '/products/myfavorites',
-  verifyUser,
-  productController.getFavoriteProducts
-)
+router.put('/products/edit/:id', verifyStore, productController.editProduct)
+router.delete('/products/:id', verifyStore, productController.removeProduct)
+router.get('/products/:id', productController.getProductById)
+router.get('/products/store/:id', productController.getProductsByStore)
 
 module.exports = router

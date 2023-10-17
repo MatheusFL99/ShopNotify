@@ -20,7 +20,7 @@ const EditProductScreen = ({ route, navigation }) => {
   const [category, setCategory] = useState('')
   const [image, setImage] = useState('')
   const { storeToken } = useContext(AuthContext)
-  const defaultURL = defaultUrl() // Assuming you have the defaultUrl utility
+  const defaultURL = defaultUrl()
 
   useEffect(() => {
     const fetchProductDetails = async () => {

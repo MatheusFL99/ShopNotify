@@ -46,9 +46,9 @@ export default function ProductCard({
         }
       )
       .then(res => {
-        console.log('Produto adicionado aos favoritos')
-        console.log(res.data)
+        console.log('Produto adicionado aos favoritos!')
         setFavorited(true)
+        console.log(res.data)
       })
       .catch(err => {
         console.log(err.response.data)
@@ -70,9 +70,9 @@ export default function ProductCard({
         }
       )
       .then(res => {
-        console.log(res.data)
-        setFavorited(false)
         console.log('Produto removido dos favoritos!')
+        setFavorited(false)
+        console.log(res.data)
       })
       .catch(err => {
         console.log(err.response.data)
