@@ -9,7 +9,6 @@ const Userprofile = () => {
   const defaultURL = defaultUrl()
   const { userToken } = useContext(AuthContext)
   const defaultImage = 'https://i.stack.imgur.com/l60Hf.png'
-  //get user data from backend
   const fetchUserData = async () => {
     try {
       const response = await axios.get(`${defaultURL}/users/checkuser`, {
@@ -31,7 +30,6 @@ const Userprofile = () => {
     <View style={styles.container}>
       <Image source={{ uri: defaultImage }} style={styles.profileImage} />
       <Text style={styles.name}>{user.name}</Text>
-      <Text style={styles.bio}>{user.bio}</Text>
     </View>
   )
 }

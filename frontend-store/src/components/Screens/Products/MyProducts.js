@@ -1,60 +1,106 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useContext, useCallback, useState } from 'react'
 import {
   View,
   Text,
-  FlatList,
   TouchableOpacity,
-  StyleSheet
+  FlatList,
+  Image,
+  StyleSheet,
+  RefreshControl
 } from 'react-native'
-import axios from 'axios'
+import { useFocusEffect } from '@react-navigation/native'
 import defaultUrl from '../../../utils/defaultUrl'
 import { AuthContext } from '../../../context/AuthContext'
+import axios from 'axios'
 
-const MyProducts = () => {
+const MyProducts = ({ navigation }) => {
   const [products, setProducts] = useState([])
+  const [refreshing, setRefreshing] = useState(false)
   const { storeToken } = useContext(AuthContext)
   const defaultURL = defaultUrl()
 
-  useEffect(() => {
-    fetchProducts()
-  }, [storeToken])
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const response = await axios.get(`${defaultURL}/products/myproducts`, {
         headers: {
           Authorization: `Bearer ${storeToken}`
         }
       })
-      setProducts(response.data.products)
+      const data = response.data
+      console.log('Fetched Data:', data)
+      setProducts(data)
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('Erro Axios:', error.message)
-      } else {
-        console.error('Erro de rede:', error.message)
-      }
+      console.error('Error fetching products:', error)
     }
+  }, [storeToken])
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchProducts()
+      return () => {}
+    }, [fetchProducts])
+  )
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true)
+    fetchProducts().then(() => setRefreshing(false))
+  }, [fetchProducts])
+
+  const addProductHandler = () => {
+    navigation.navigate('Adicionar Produto')
   }
 
-  // Função para renderizar cada item da lista
-  const renderItem = ({ item }) => {
-    return (
-      <TouchableOpacity style={styles.productItem}>
-        <Text style={styles.productTitle}>{item.title}</Text>
-        <Text style={styles.productDescription}>{item.description}</Text>
-        <Text style={styles.productPrice}>Preço: R$ {item.price}</Text>
-        <Text style={styles.productDiscount}>Desconto: {item.discount}%</Text>
-      </TouchableOpacity>
-    )
+  const editProductHandler = productId => {
+    navigation.navigate('Editar Produto', { productId })
+  }
+
+  const deleteProduct = async productId => {
+    const response = await axios.delete(`${defaultURL}/products/${productId}`, {
+      headers: {
+        Authorization: `Bearer ${storeToken}`
+      }
+    })
+    if (response.status === 200) {
+      fetchProducts()
+    }
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Seus Produtos</Text>
+      <View style={styles.addButtonContainer}>
+        <TouchableOpacity style={styles.addButton} onPress={addProductHandler}>
+          <Text style={styles.buttonText}>Adicionar Produto</Text>
+        </TouchableOpacity>
+      </View>
       <FlatList
         data={products}
-        keyExtractor={item => item.id.toString()}
-        renderItem={renderItem}
+        renderItem={({ item }) => (
+          <View style={styles.productCard}>
+            <Image source={{ uri: item.image }} style={styles.productImage} />
+            <View style={styles.productDetails}>
+              <Text style={styles.productTitle}>{item.title}</Text>
+              <Text style={styles.productPrice}>R$ {item.price}</Text>
+            </View>
+            <View style={styles.buttons}>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => editProductHandler(item._id)}
+              >
+                <Text style={styles.buttonText}>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => deleteProduct(item._id)}
+              >
+                <Text style={styles.buttonText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+        keyExtractor={item => item._id}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
     </View>
   )
@@ -63,38 +109,62 @@ const MyProducts = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16
+    padding: 10,
+    backgroundColor: '#f7f7f7'
   },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16
+  addButtonContainer: {
+    marginVertical: 10,
+    paddingHorizontal: 10
   },
-  productItem: {
-    backgroundColor: '#FFFFFF',
-    marginBottom: 16,
-    padding: 16,
-    borderRadius: 8,
-    elevation: 2
+  addButton: {
+    backgroundColor: '#836FFF',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center'
+  },
+  productCard: {
+    flexDirection: 'row',
+    padding: 10,
+    backgroundColor: '#ffffff',
+    marginVertical: 5,
+    borderRadius: 10
+  },
+  productImage: {
+    width: 70,
+    height: 70,
+    borderRadius: 35
+  },
+  productDetails: {
+    flex: 2,
+    marginLeft: 10,
+    justifyContent: 'center'
   },
   productTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold'
   },
-  productDescription: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 4
-  },
   productPrice: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: 8
+    color: 'gray'
   },
-  productDiscount: {
-    fontSize: 14,
-    color: '#FF5733',
-    marginTop: 4
+  buttons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  editButton: {
+    backgroundColor: '#4CAF50',
+    padding: 8,
+    borderRadius: 5,
+    marginRight: 5
+  },
+  deleteButton: {
+    backgroundColor: '#f44336',
+    padding: 8,
+    borderRadius: 5
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 14
   }
 })
 

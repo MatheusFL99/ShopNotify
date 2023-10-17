@@ -26,10 +26,6 @@ module.exports = class productController {
       res.status(422).json({ message: 'Categoria do produto é obrigatório!' })
       return
     }
-    if (!image) {
-      res.status(422).json({ message: 'Imagem do produto é obrigatória!' })
-      return
-    }
 
     if (price <= 0) {
       res.status(422).json({ message: 'Preço do produto é inválido!' })
@@ -47,7 +43,6 @@ module.exports = class productController {
       discount,
       description,
       category,
-      price,
       image,
       store: {
         _id: store.id,
@@ -57,10 +52,74 @@ module.exports = class productController {
 
     try {
       const newProduct = await product.save()
-      res.status(201).json(newProduct)
+      res.status(200).json(newProduct)
     } catch (err) {
       res.status(500).json({ message: err })
       return
+    }
+  }
+
+  //////////////// EDITAR PRODUTO ///////////////
+  static async editProduct(req, res) {
+    const productId = req.params.id
+    const { title, price, discount, description, category, image } = req.body
+
+    // validations (similar to the create function)
+    // ... (reuse the same validation steps as createProduct)
+
+    try {
+      const updatedProduct = await Product.findByIdAndUpdate(
+        productId,
+        {
+          title,
+          price,
+          discount,
+          description,
+          category,
+          image
+        },
+        { new: true }
+      ) // { new: true } returns the updated product
+
+      if (!updatedProduct) {
+        res.status(404).json({ message: 'Produto não encontrado!' })
+        return
+      }
+
+      res.status(200).json(updatedProduct)
+    } catch (err) {
+      res.status(500).json({ message: err })
+    }
+  }
+
+  ///////////// LISTAR TODOS OS PRODUTOS DA LOJA ///////////////
+  static async getStoreProducts(req, res) {
+    const token = getToken(req)
+    const store = await getStoreByToken(token)
+
+    try {
+      const products = await Product.find({ 'store._id': store.id })
+      res.status(200).json(products)
+    } catch (err) {
+      res.status(500).json({ message: err })
+    }
+  }
+
+  /////////////// REMOVER PRODUTO ///////////////
+  static async removeProduct(req, res) {
+    const productId = req.params.id
+
+    try {
+      const product = await Product.findByIdAndRemove(productId)
+
+      if (!product) {
+        res.status(404).json({ message: 'Produto não encontrado!' })
+        return
+      }
+
+      res.status(200).json({ message: 'Produto removido com sucesso!' })
+    } catch (err) {
+      res.status(500).json({ message: err })
     }
   }
 
@@ -183,8 +242,8 @@ module.exports = class productController {
 
       const favoriteProductIds = user.favoriteProducts
       const favoriteProducts = await Product.find({
-        _id: { $in: favoriteProductIds }
-      })
+        _id: { $in: favoriteProductIds.map(ObjectId) }
+      }).toArray()
 
       res.json(favoriteProducts)
     } catch (error) {
