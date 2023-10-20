@@ -126,7 +126,7 @@ module.exports = class productController {
   /////////////// LISTAR PRODUTOS ///////////////
   static async listProducts(req, res) {
     try {
-      const products = await Product.find()
+      const products = await Product.find().sort({ createdAt: -1 })
       res.status(200).json(products)
     } catch (err) {
       res.status(500).json({ message: err })
@@ -244,17 +244,5 @@ module.exports = class productController {
       res.status(500).json({ message: err })
       return
     }
-  }
-
-  ////////////// LISTAR PRODUTOS DE UMA LOJA //////////////
-  static async getAllStoreProducts(req, res) {
-    const token = getToken(req)
-    const store = await getStoreByToken(token)
-
-    const products = await Product.find({ 'store._id': store._id })
-
-    res.status(200).json({
-      products
-    })
   }
 }

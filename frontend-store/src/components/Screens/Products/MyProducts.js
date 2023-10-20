@@ -6,6 +6,7 @@ import {
   FlatList,
   Image,
   StyleSheet,
+  Alert,
   RefreshControl
 } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
@@ -61,6 +62,7 @@ const MyProducts = ({ navigation }) => {
       }
     })
     if (response.status === 200) {
+      Alert.alert('Success', 'Produto deletado com sucesso!')
       fetchProducts()
     }
   }
@@ -79,7 +81,15 @@ const MyProducts = ({ navigation }) => {
             <Image source={{ uri: item.image }} style={styles.productImage} />
             <View style={styles.productDetails}>
               <Text style={styles.productTitle}>{item.title}</Text>
-              <Text style={styles.productPrice}>R$ {item.price}</Text>
+              <Text style={styles.productPrice}>
+                {(
+                  item.price -
+                  item.price * (item.discount / 100)
+                ).toLocaleString('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                })}
+              </Text>
             </View>
             <View style={styles.buttons}>
               <TouchableOpacity

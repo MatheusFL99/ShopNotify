@@ -108,6 +108,69 @@ module.exports = class UserController {
     res.status(200).send(currentUser)
   }
 
+  /////////////// LOGOUT ///////////////
+  static async logout(req, res) {
+    res.cookie('token', '', { maxAge: 0 })
+    res.status(200).json({ message: 'Logout realizado com sucesso!' })
+  }
+
+  //////////////// EDITAR PERFIL ///////////////////
+  static async editProfile(req, res) {
+    const { name, email, password, confirmpassword } = req.body
+    const token = getToken(req)
+    const user = getUserByToken(token)
+
+    // validações
+    if (!name) {
+      res.status(422).json({ message: 'O nome é obrigatório!' })
+      return
+    }
+
+    user.name = name
+
+    if (!email) {
+      res.status(422).json({ message: 'O e-mail é obrigatório!' })
+      return
+    }
+
+    const userExists = await User.findOne({ email: email })
+
+    if (user.email !== email && userExists) {
+      res.status(422).json({ message: 'Esse email já está sendo utilizado.' })
+      return
+    }
+
+    user.email = email
+
+    if (password != confirmpassword) {
+      res
+        .status(422)
+        .json({ error: 'Senha e confirmação de senha precisam ser iguais' })
+      return
+    } else if (password == confirmpassword && password != null) {
+      const salt = await bcrypt.genSalt(12)
+      const reqPassword = req.body.password
+
+      const passwordHash = await bcrypt.hash(reqPassword, salt)
+
+      user.password = passwordHash
+    }
+
+    try {
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: user._id },
+        { $set: user },
+        { new: true }
+      )
+      res.json({
+        message: 'Usuário atualizado com sucesso!',
+        data: updatedUser
+      })
+    } catch (error) {
+      res.status(500).json({ message: error })
+    }
+  }
+
   /////////////// GET DE USUÁRIO PELO ID ///////////////
   static async getUserById(req, res) {
     const id = req.params.id
@@ -120,11 +183,5 @@ module.exports = class UserController {
     }
 
     res.status(200).json({ user })
-  }
-
-  /////////////// LOGOUT ///////////////
-  static async logout(req, res) {
-    res.cookie('token', '', { maxAge: 0 })
-    res.status(200).json({ message: 'Logout realizado com sucesso!' })
   }
 }

@@ -10,12 +10,13 @@ export const AuthProvider = ({ children }) => {
   const [storeToken, setStoreToken] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const register = (name, email, password, confirmpassword) => {
+  const register = (name, email, cnpj, password, confirmpassword) => {
     setIsLoading(true)
     axios
       .post(`${defaultURL}/stores/register`, {
         name: name,
         email: email,
+        cnpj: cnpj,
         password: password,
         confirmpassword: confirmpassword
       })

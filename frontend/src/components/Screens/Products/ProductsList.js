@@ -1,30 +1,56 @@
-import React, { useEffect, useState } from 'react'
-import { FlatList, StyleSheet, TextInput, View } from 'react-native'
+import React, { useState, useCallback } from 'react'
+import {
+  FlatList,
+  StyleSheet,
+  TextInput,
+  View,
+  Text,
+  RefreshControl
+} from 'react-native'
 import axios from 'axios'
 import ProductCard from './ProductCard'
 import defaultUrl from '../../../utils/defaultUrl'
+import { useFocusEffect } from '@react-navigation/native'
 
 export default function ProductsList() {
   const [products, setProducts] = useState([])
+  const [refreshing, setRefreshing] = useState(false)
   const defaultURL = defaultUrl()
   const [searchQuery, setSearchQuery] = useState('')
 
-  useEffect(() => {
-    fetchProducts()
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      fetchProducts()
+      return () => {}
+    }, [fetchProducts])
+  )
 
   const fetchProducts = async () => {
     try {
       const response = await axios.get(`${defaultURL}/products/list`)
       setProducts(response.data)
+      console.log(response.data)
     } catch (error) {
       console.error('Erro ao buscar os produtos:', error)
     }
   }
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true)
+    fetchProducts().then(() => setRefreshing(false))
+  }, [fetchProducts])
+
   const filteredProducts = products.filter(product => {
-    return product.category.toLowerCase().includes(searchQuery.toLowerCase())
+    return product.title.toLowerCase().includes(searchQuery.toLowerCase())
   })
+
+  if (products.length === 0) {
+    return (
+      <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+        <Text>Nenhum produto foi encontrado.</Text>
+      </View>
+    )
+  }
 
   return (
     <View>
@@ -41,6 +67,9 @@ export default function ProductsList() {
         contentContainerStyle={{
           paddingHorizontal: 15
         }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
     </View>
   )

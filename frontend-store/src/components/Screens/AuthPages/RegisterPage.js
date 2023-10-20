@@ -36,6 +36,12 @@ const RegisterUser = ({ navigation }) => {
       />
       <TextInput
         style={styles.input}
+        placeholder="CNPJ"
+        onChangeText={setCnpj}
+        value={cnpj}
+      />
+      <TextInput
+        style={styles.input}
         placeholder="Senha"
         secureTextEntry={true}
         onChangeText={setPassword}

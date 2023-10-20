@@ -1,8 +1,8 @@
 import React from 'react'
-import RegisterUser from '../components/Screens/Register'
-import LoginUser from '../components/Screens/Login'
+import RegisterUser from '../components/Screens/RegisterScreen'
+import LoginUser from '../components/Screens/LoginScreen'
 import WelcomePage from '../components/Screens/WelcomePage'
-import Primeira from '../components/Screens/OnBoard'
+import Primeira from '../components/Screens/OnBoardScreen'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 

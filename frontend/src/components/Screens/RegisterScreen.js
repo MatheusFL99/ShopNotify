@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet
 } from 'react-native'
-import { AuthContext } from '../../../context/AuthContext'
+import { AuthContext } from '../../context/AuthContext'
 
 const RegisterUser = ({ navigation }) => {
   const [name, setName] = useState('')

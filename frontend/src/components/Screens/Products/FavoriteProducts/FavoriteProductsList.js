@@ -30,7 +30,7 @@ export default function FavoriteProductsList() {
   }
 
   const filteredProducts = products.filter(product => {
-    return product.category.toLowerCase().includes(searchQuery.toLowerCase())
+    return product.title.toLowerCase().includes(searchQuery.toLowerCase())
   })
 
   if (products.length === 0) {

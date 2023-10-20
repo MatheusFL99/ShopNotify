@@ -4,6 +4,7 @@ import {
   TextInput,
   StyleSheet,
   Text,
+  Alert,
   TouchableOpacity
 } from 'react-native'
 import axios from 'axios'

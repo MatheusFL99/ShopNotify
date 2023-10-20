@@ -140,7 +140,7 @@ export default function ProductCard({
             </View>
           ) : (
             <Text className="text-white dark:text-black font-bold">
-              Resgatar Cupom
+              Resgatar Produto
             </Text>
           )}
         </TouchableOpacity>

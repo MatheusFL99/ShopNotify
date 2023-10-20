@@ -1,8 +1,8 @@
 const router = require('express').Router()
 const userController = require('../controllers/userController')
 const storeController = require('../controllers/storeController')
-const couponController = require('../controllers/couponController')
 const productController = require('../controllers/productController')
+const purchaseController = require('../controllers/purchaseController')
 
 const verifyStore = require('../helpers/verify-store-token')
 const verifyUser = require('../helpers/verify-user-token')
@@ -17,16 +17,8 @@ router.get('/users/:id', userController.getUserById)
 router.post('/stores/register', storeController.register)
 router.post('/stores/login', storeController.login)
 
-// rotas definidas para api cupons
-router.post('/coupons/create', verifyStore, couponController.createCoupon)
-router.post('/coupons/redeem', verifyUser, couponController.redeemCoupon)
-router.post('/coupons/list', verifyStore, couponController.listCoupons)
-router.get('/coupons/:id', couponController.getCouponById)
-router.get('/coupons/store/:id', couponController.getCouponsByStore)
-
 // rotas definidas para a api products
 router.post('/products/create', verifyStore, productController.createProduct)
-
 router.get(
   '/products/myProducts',
   verifyStore,
@@ -52,5 +44,18 @@ router.put('/products/edit/:id', verifyStore, productController.editProduct)
 router.delete('/products/:id', verifyStore, productController.removeProduct)
 router.get('/products/:id', productController.getProductById)
 router.get('/products/store/:id', productController.getProductsByStore)
+
+// rotas definidas para a api purchases
+router.post(
+  '/purchases/register',
+  verifyUser,
+  purchaseController.registerPurchase
+)
+router.get(
+  '/purchases/mypurchases',
+  verifyUser,
+  purchaseController.getUserPurchases
+)
+router.get('/purchases/:id', purchaseController.getPurchaseById)
 
 module.exports = router

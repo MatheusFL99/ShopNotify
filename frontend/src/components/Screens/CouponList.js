@@ -97,7 +97,7 @@ const CouponList = () => {
         </View>
         {item.available && (
           <Image
-            source={require('../../../../assets/QRCode.png')}
+            source={require('../../../assets/QRCode.png')}
             className="w-12 h-12"
           />
         )}

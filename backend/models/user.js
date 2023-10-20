@@ -26,6 +26,28 @@ const userSchema = new mongoose.Schema({
       ref: 'Product'
     }
   ],
+  adresses: [
+    {
+      streetadress: String,
+      complement: String,
+      city: String,
+      state: String,
+      zipcode: String,
+      country: String
+    }
+  ],
+  cart: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product'
+    }
+  ],
+  purchases: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Purchase'
+    }
+  ],
   location: {
     type: {
       type: String,
