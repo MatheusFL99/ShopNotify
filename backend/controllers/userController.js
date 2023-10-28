@@ -92,6 +92,12 @@ module.exports = class UserController {
     await createUserToken(user, req, res)
   }
 
+  /////////////// LOGOUT ///////////////
+  static async logout(req, res) {
+    res.cookie('token', '', { maxAge: 0 })
+    res.status(200).json({ message: 'Logout realizado com sucesso!' })
+  }
+
   /////////////// CHECAR USUÁRIO PELO TOKEN JWS ///////////////
   static async checkUser(req, res) {
     let currentUser
@@ -108,17 +114,12 @@ module.exports = class UserController {
     res.status(200).send(currentUser)
   }
 
-  /////////////// LOGOUT ///////////////
-  static async logout(req, res) {
-    res.cookie('token', '', { maxAge: 0 })
-    res.status(200).json({ message: 'Logout realizado com sucesso!' })
-  }
-
   //////////////// EDITAR PERFIL ///////////////////
   static async editProfile(req, res) {
+    const userId = req.params.id
     const { name, email, password, confirmpassword } = req.body
-    const token = getToken(req)
-    const user = getUserByToken(token)
+
+    const user = await User.findById(userId)
 
     // validações
     if (!name) {

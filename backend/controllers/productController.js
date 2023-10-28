@@ -64,8 +64,23 @@ module.exports = class productController {
     const productId = req.params.id
     const { title, price, discount, description, category, image } = req.body
 
-    // validations (similar to the create function)
-    // ... (reuse the same validation steps as createProduct)
+    // validações
+    if (!title) {
+      res.status(422).json({ message: 'Nome do produto é obrigatório!' })
+      return
+    }
+    if (!price) {
+      res.status(422).json({ message: 'Preço do produto é obrigatório!' })
+      return
+    }
+    if (!description) {
+      res.status(422).json({ message: 'Descrição do produto é obrigatória!' })
+      return
+    }
+    if (!category) {
+      res.status(422).json({ message: 'Categoria do produto é obrigatória!' })
+      return
+    }
 
     try {
       const updatedProduct = await Product.findByIdAndUpdate(
@@ -79,7 +94,7 @@ module.exports = class productController {
           image
         },
         { new: true }
-      ) // { new: true } returns the updated product
+      )
 
       if (!updatedProduct) {
         res.status(404).json({ message: 'Produto não encontrado!' })
@@ -240,6 +255,32 @@ module.exports = class productController {
         'favoriteProducts'
       )
       res.status(200).json(userWithFavorites.favoriteProducts)
+    } catch (err) {
+      res.status(500).json({ message: err })
+      return
+    }
+  }
+
+  //////////// CHECAR SE PRODUTO É FAVORITO DO USUÁRIO //////////////
+  static async checkIfProductIsFavorite(req, res) {
+    const token = getToken(req)
+    const user = await getUserByToken(token)
+
+    const { productId } = req.body
+
+    //validações
+    if (!productId) {
+      res.status(422).json({ message: 'Id do produto é obrigatório!' })
+      return
+    }
+
+    try {
+      const userWithFavorites = await User.findById(user._id).populate(
+        'favoriteProducts'
+      )
+      const userFavorites = userWithFavorites.favoriteProducts
+      const userHasProduct = userFavorites.includes(productId)
+      res.status(200).json(userHasProduct)
     } catch (err) {
       res.status(500).json({ message: err })
       return

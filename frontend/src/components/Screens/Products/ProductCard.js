@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { View, Text, Image, TouchableOpacity, Modal } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { AuthContext } from '../../../context/AuthContext'
@@ -13,7 +13,8 @@ export default function ProductCard({
   discount,
   description,
   store,
-  _id
+  _id,
+  isFavorite
 }) {
   const defaultURL = defaultUrl()
   const FinalPrice = price - (price * discount) / 100
@@ -28,8 +29,32 @@ export default function ProductCard({
 
   const [modalVisible, setModalVisible] = useState(false)
   const [cupomResgatado, setCupomResgatado] = useState(false)
-  const [favorited, setFavorited] = useState(false)
+  const [favorited, setFavorited] = useState(isFavorite)
   const { userToken } = useContext(AuthContext)
+
+  const checkIfFavorited = async () => {
+    const productId = _id
+    await axios
+      .get(`${defaultURL}/products/favorites`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`
+        }
+      })
+      .then(res => {
+        const favorites = res.data
+        const isFavorited = favorites.find(
+          favorite => favorite._id === productId
+        )
+        if (isFavorited) {
+          setFavorited(true)
+        } else {
+          setFavorited(false)
+        }
+      })
+      .catch(err => {
+        console.log(err.response.data)
+      })
+  }
 
   const addtofavorites = async (_id, userToken) => {
     const productId = _id
@@ -78,6 +103,10 @@ export default function ProductCard({
         console.log(err.response.data)
       })
   }
+
+  useEffect(() => {
+    checkIfFavorited()
+  }, [userToken])
 
   const closeModal = () => {
     setModalVisible(false)

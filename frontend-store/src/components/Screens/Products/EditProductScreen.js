@@ -41,7 +41,7 @@ const EditProductScreen = ({ route, navigation }) => {
         setCategory(product.category)
         setImage(product.image)
       } catch (error) {
-        console.error('Error fetching product details:', error)
+        console.error('Erro ao receber dados do produto:', error)
       }
     }
     fetchProductDetails()
@@ -72,7 +72,7 @@ const EditProductScreen = ({ route, navigation }) => {
         console.log(response.data)
       }
     } catch (error) {
-      console.error('Error updating product:', error)
+      console.error('Erro ao atualizar produto:', error)
       Alert.alert('Error', 'Erro ao atualizar o produto.')
     }
   }

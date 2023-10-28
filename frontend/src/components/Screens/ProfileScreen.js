@@ -2,11 +2,10 @@ import React, { useState, useEffect, useContext } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import defaultUrl from '../../utils/defaultUrl'
 import { AuthContext } from '../../context/AuthContext'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { MaterialIcons } from '@expo/vector-icons'
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons'
 import axios from 'axios'
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }) => {
   const [user, setUser] = useState(null)
   const defaultURL = defaultUrl()
   const defaultImage = 'https://i.stack.imgur.com/l60Hf.png'
@@ -29,6 +28,22 @@ const ProfileScreen = () => {
     fetchUserData()
   }, [userToken])
 
+  const myAddressHandler = () => {
+    navigation.navigate('Endereços')
+  }
+
+  const editProfileHandler = () => {
+    navigation.navigate('Editar Perfil')
+  }
+
+  const myPurchasesHandler = () => {
+    navigation.navigate('Minhas compras')
+  }
+
+  const myFavoritesHandler = () => {
+    navigation.navigate('Favoritos')
+  }
+
   return (
     <View style={styles.container}>
       {user && (
@@ -37,51 +52,82 @@ const ProfileScreen = () => {
             <Image source={{ uri: defaultImage }} style={styles.profileImage} />
             <Text style={styles.profileName}>{user.name}</Text>
           </View>
-          {[
-            {
-              icon: 'shopping',
-              title: 'Minhas compras',
-              desc: 'Veja o histórico de suas compras'
-            },
-            {
-              icon: 'heart-outline',
-              title: 'Favoritos',
-              desc: 'Gerencie seus produtos favoritos'
-            },
-            {
-              icon: 'map-marker-outline',
-              title: 'Endereços',
-              desc: 'Gerencie seus endereços'
-            },
-            {
-              icon: 'credit-card-outline',
-              title: 'Pagamentos',
-              desc: 'Altere seus métodos de pagamento'
-            },
-            {
-              icon: 'bell-outline',
-              title: 'Notificações',
-              desc: 'Visualize sua notificações'
-            },
-            {
-              icon: 'account-edit-outline',
-              title: 'Editar perfil',
-              desc: 'Altere suas informações pessoais'
-            }
-          ].map((item, index) => (
-            <TouchableOpacity key={index} style={styles.item}>
-              <MaterialCommunityIcons name={item.icon} size={24} color="red" />
-              <View style={styles.textContainer}>
-                <Text style={styles.itemText}>{item.title}</Text>
-                <Text style={styles.itemDescription}>{item.desc}</Text>
-              </View>
-              <MaterialIcons
-                name="keyboard-arrow-right"
-                size={24}
-                color="gray"
-              />
-            </TouchableOpacity>
-          ))}
+          <TouchableOpacity style={styles.item} onPress={myPurchasesHandler}>
+            <MaterialCommunityIcons name="shopping" size={24} color="red" />
+            <View style={styles.textContainer}>
+              <Text style={styles.itemText}>Minhas compras</Text>
+              <Text style={styles.itemDescription}>
+                Veja o histórico de suas compras
+              </Text>
+            </View>
+            <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.item} onPress={myFavoritesHandler}>
+            <MaterialCommunityIcons
+              name="heart-outline"
+              size={24}
+              color="red"
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.itemText}>Favoritos</Text>
+              <Text style={styles.itemDescription}>
+                Gerencie seus produtos favoritos
+              </Text>
+            </View>
+            <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.item} onPress={myAddressHandler}>
+            <MaterialCommunityIcons
+              name="map-marker-outline"
+              size={24}
+              color="red"
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.itemText}>Endereços</Text>
+              <Text style={styles.itemDescription}>
+                Gerencie seus endereços
+              </Text>
+            </View>
+            <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.item}>
+            <MaterialCommunityIcons
+              name="credit-card-outline"
+              size={24}
+              color="red"
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.itemText}>Pagamento</Text>
+              <Text style={styles.itemDescription}>
+                Gerencie suas formas de pagamento
+              </Text>
+            </View>
+            <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.item}>
+            <MaterialCommunityIcons name="bell-outline" size={24} color="red" />
+            <View style={styles.textContainer}>
+              <Text style={styles.itemText}>Notificações</Text>
+              <Text style={styles.itemDescription}>
+                Visualize suas notificações
+              </Text>
+            </View>
+            <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.item} onPress={editProfileHandler}>
+            <MaterialCommunityIcons
+              name="account-edit-outline"
+              size={24}
+              color="red"
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.itemText}>Editar perfil</Text>
+              <Text style={styles.itemDescription}>
+                Altere suas informações pessoais
+              </Text>
+            </View>
+            <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
+          </TouchableOpacity>
         </>
       )}
     </View>

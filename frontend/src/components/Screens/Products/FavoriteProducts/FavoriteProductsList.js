@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { FlatList, StyleSheet, TextInput, View, Text } from 'react-native' // Added Text import
+import { FlatList, StyleSheet, View, Text } from 'react-native'
 import axios from 'axios'
 import FavoriteProductCard from './FavoriteProductCard'
 import defaultUrl from '../../../../utils/defaultUrl'
@@ -10,6 +10,7 @@ export default function FavoriteProductsList() {
   const defaultURL = defaultUrl()
   const [searchQuery, setSearchQuery] = useState('')
   const { userToken } = useContext(AuthContext)
+  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
     fetchProducts()
@@ -17,15 +18,17 @@ export default function FavoriteProductsList() {
 
   const fetchProducts = async () => {
     try {
+      setRefreshing(true)
       const response = await axios.get(`${defaultURL}/products/favorites`, {
         headers: {
           Authorization: `Bearer ${userToken}`
         }
       })
-
       setProducts(response.data)
     } catch (error) {
       console.log(error.response.data)
+    } finally {
+      setRefreshing(false)
     }
   }
 
@@ -44,12 +47,6 @@ export default function FavoriteProductsList() {
 
   return (
     <View>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Pesquisar..."
-        onChangeText={text => setSearchQuery(text)}
-        value={searchQuery}
-      />
       <FlatList
         data={filteredProducts}
         keyExtractor={product => product._id}
@@ -57,19 +54,9 @@ export default function FavoriteProductsList() {
         contentContainerStyle={{
           paddingHorizontal: 15
         }}
+        refreshing={refreshing}
+        onRefresh={fetchProducts}
       />
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  searchInput: {
-    height: 50,
-    borderRadius: 10,
-    backgroundColor: 'white',
-    borderColor: 'gray',
-    borderWidth: 1,
-    margin: 10,
-    padding: 10
-  }
-})

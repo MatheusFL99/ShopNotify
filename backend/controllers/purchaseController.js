@@ -45,7 +45,7 @@ module.exports = class purchaseController {
         }
       )
       res.status(201).json({
-        message: `Compra realizada com sucesso!, ${savedPurchase.products}`
+        message: `Compra realizada com sucesso!, ${userUpdated}`
       })
     } catch (err) {
       res.status(500).json({ message: err })
@@ -61,7 +61,11 @@ module.exports = class purchaseController {
     try {
       const userWithPurchases = await User.findById(user._id).populate({
         path: 'purchases',
-        populate: { path: 'products', populate: { path: 'store' } }
+        options: { sort: { date: -1 } },
+        populate: {
+          path: 'products',
+          populate: { path: 'store' }
+        }
       })
       res.status(200).json(userWithPurchases.purchases)
     } catch (err) {

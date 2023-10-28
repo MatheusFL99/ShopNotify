@@ -6,11 +6,13 @@ const purchaseController = require('../controllers/purchaseController')
 
 const verifyStore = require('../helpers/verify-store-token')
 const verifyUser = require('../helpers/verify-user-token')
+const addressController = require('../controllers/addressController')
 
 // rotas definidas pra api usuários
 router.post('/users/register', userController.register)
 router.post('/users/login', userController.login)
 router.get('/users/checkuser', userController.checkUser)
+router.put('/users/edit/:id', verifyUser, userController.editProfile)
 router.get('/users/:id', userController.getUserById)
 
 // rotas definidas para api lojas
@@ -29,6 +31,11 @@ router.get(
   '/products/favorites',
   verifyUser,
   productController.getFavoriteProducts
+)
+router.post(
+  '/products/checkfavoritestatus',
+  verifyUser,
+  productController.checkIfProductIsFavorite
 )
 router.put(
   '/products/addtofavorites',
@@ -57,5 +64,16 @@ router.get(
   purchaseController.getUserPurchases
 )
 router.get('/purchases/:id', purchaseController.getPurchaseById)
+
+// rotas definidas para a api address
+router.post('/address/create', verifyUser, addressController.createAddress)
+router.get(
+  '/address/myaddresses',
+  verifyUser,
+  addressController.getUserAddresses
+)
+router.delete('/address/:id', verifyUser, addressController.removeAddress)
+router.put('/address/edit/:id', verifyUser, addressController.editAddress)
+router.get('/address/:id', verifyUser, addressController.getAddressById)
 
 module.exports = router

@@ -28,12 +28,8 @@ const userSchema = new mongoose.Schema({
   ],
   adresses: [
     {
-      streetadress: String,
-      complement: String,
-      city: String,
-      state: String,
-      zipcode: String,
-      country: String
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Address'
     }
   ],
   cart: [

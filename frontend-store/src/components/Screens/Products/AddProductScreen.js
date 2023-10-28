@@ -53,7 +53,7 @@ const AddProductScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Product Title</Text>
+      <Text style={styles.label}>Nome</Text>
       <TextInput
         style={styles.input}
         placeholder="Digite o título do produto"
@@ -61,7 +61,7 @@ const AddProductScreen = ({ navigation }) => {
         onChangeText={setTitle}
       />
 
-      <Text style={styles.label}>Product Price</Text>
+      <Text style={styles.label}>Preço</Text>
       <TextInput
         style={styles.input}
         placeholder="Digite o preço original do produto"
@@ -70,16 +70,16 @@ const AddProductScreen = ({ navigation }) => {
         keyboardType="numeric"
       />
 
-      <Text style={styles.label}>Product Discount</Text>
+      <Text style={styles.label}>Disconto</Text>
       <TextInput
         style={styles.input}
-        placeholder="Digite a porcentagem de desconto"
+        placeholder="Digite a porcentagem de desconto do produto"
         value={discount}
         onChangeText={setDiscount}
         keyboardType="numeric"
       />
 
-      <Text style={styles.label}>Product Description</Text>
+      <Text style={styles.label}>Descrição do produto</Text>
       <TextInput
         style={styles.input}
         placeholder="Digite a descrição do produto"
@@ -88,7 +88,7 @@ const AddProductScreen = ({ navigation }) => {
         multiline
       />
 
-      <Text style={styles.label}>Product Category</Text>
+      <Text style={styles.label}>Categoria do produto</Text>
       <TextInput
         style={styles.input}
         placeholder="Digite a categoria do produto"
@@ -96,7 +96,7 @@ const AddProductScreen = ({ navigation }) => {
         onChangeText={setCategory}
       />
 
-      <Text style={styles.label}>Product Image</Text>
+      <Text style={styles.label}>Imagem do produto</Text>
       <TextInput
         style={styles.input}
         placeholder="Digite o URL da imagem do produto"

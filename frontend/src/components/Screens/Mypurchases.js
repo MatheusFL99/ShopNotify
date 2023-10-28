@@ -26,7 +26,7 @@ const PurchaseHistory = () => {
       })
       setPurchases(response.data)
     } catch (error) {
-      console.error('Error fetching purchase history:', error)
+      console.error('Erro ao carregar histórico de compras:', error)
     }
   }
 
@@ -38,13 +38,17 @@ const PurchaseHistory = () => {
   const renderPurchaseItem = ({ item: purchase }) => (
     <View style={styles.purchaseContainer}>
       <Text style={styles.dateText}>
-        {new Date(purchase.date).toLocaleDateString()}
+        {new Date(purchase.date).toLocaleDateString('pt-BR', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        })}
       </Text>
 
       <View style={styles.purchaseDetails}>
         <Image
           source={{
-            uri: purchase?.products[0]?.image || 'defaultProductImageUrl'
+            uri: purchase.products[0].image || 'defaultProductImageUrl'
           }}
           style={styles.productImage}
         />
@@ -66,7 +70,7 @@ const PurchaseHistory = () => {
 
           <View style={styles.orderInfoContainer}>
             <FontAwesome name="check-circle" size={16} color="green" />
-            <Text style={styles.orderInfo}>Pedido concluído.</Text>
+            <Text style={styles.orderInfo}>Compra concluída.</Text>
           </View>
         </View>
       </View>
