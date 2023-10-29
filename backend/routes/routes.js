@@ -72,7 +72,11 @@ router.get(
   verifyUser,
   addressController.getUserAddresses
 )
-router.delete('/address/:id', verifyUser, addressController.removeAddress)
+router.delete(
+  '/address/delete/:id',
+  verifyUser,
+  addressController.removeAddress
+)
 router.put('/address/edit/:id', verifyUser, addressController.editAddress)
 router.get('/address/:id', verifyUser, addressController.getAddressById)
 

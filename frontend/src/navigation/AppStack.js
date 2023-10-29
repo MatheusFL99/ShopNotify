@@ -8,6 +8,7 @@ import MyPurchases from '../components/Screens/Mypurchases'
 import EditProfileScreen from '../components/Screens/EditProfileScreen'
 import AddressesScreen from '../components/Screens/Adresses/AddressesScreen'
 import CreateAddressScreen from '../components/Screens/Adresses/CreateAddressScreen'
+import EditAddressScreen from '../components/Screens/Adresses/EditAddressScreen'
 
 const Drawer = createDrawerNavigator()
 
@@ -39,6 +40,11 @@ const AppStack = () => {
       <Drawer.Screen
         name="Adicionar Endereço"
         component={CreateAddressScreen}
+        options={{ drawerItemStyle: { display: 'none' } }}
+      />
+      <Drawer.Screen
+        name="Editar Endereço"
+        component={EditAddressScreen}
         options={{ drawerItemStyle: { display: 'none' } }}
       />
     </Drawer.Navigator>

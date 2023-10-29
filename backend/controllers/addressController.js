@@ -90,10 +90,11 @@ module.exports = class addressController {
   ////////// EDITAR ENDEREÇO //////////
   static async editAddress(req, res) {
     const addressId = req.params.id
-    const { streetadress, complement, city, state, zipcode, country } = req.body
+    const { name, streetaddress, complement, city, state, zipcode, country } =
+      req.body
 
     // validações
-    if (!streetadress) {
+    if (!streetaddress) {
       res.status(422).json({ message: 'Endereço é obrigatório!' })
       return
     }
@@ -118,7 +119,8 @@ module.exports = class addressController {
       const updatedAddress = await Address.findByIdAndUpdate(
         addressId,
         {
-          streetadress,
+          name,
+          streetaddress,
           complement,
           city,
           state,
