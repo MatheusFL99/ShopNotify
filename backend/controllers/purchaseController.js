@@ -5,8 +5,8 @@ const User = require('../models/user')
 const Purchase = require('../models/purchase')
 
 module.exports = class purchaseController {
-  ///////// CRIAR COMPRA //////////
-  static async registerPurchase(req, res) {
+  //////// ADICIONAR PRODUTO AO CARRINHO //////////
+  static async addToCart(req, res) {
     const token = getToken(req)
     const user = await getUserByToken(token)
 
@@ -15,37 +15,128 @@ module.exports = class purchaseController {
       res.status(422).json({ message: 'Usuário não encontrado!' })
       return
     }
-    if (!req.body.products) {
-      res.status(422).json({ message: 'Produtos são obrigatórios!' })
+    if (!req.body.productId) {
+      res.status(422).json({ message: 'Produto é obrigatório!' })
       return
     }
-    if (req.body.products.length === 0) {
-      res.status(422).json({ message: 'Produtos são obrigatórios!' })
-      return
-    }
-    if (!req.body.total) {
-      res.status(422).json({ message: 'Preço total é obrigatório!' })
-      return
-    }
-
-    // salvar compra no banco de dados
-    const purchase = new Purchase({
-      buyer: user._id,
-      products: req.body.products,
-      total: req.body.total
-    })
 
     try {
-      const savedPurchase = await purchase.save()
+      const product = await Product.findById(req.body.productId)
       const userUpdated = await User.findByIdAndUpdate(
         { _id: user._id },
         {
-          $push: { purchases: savedPurchase._id },
+          $push: { cart: product._id },
           new: true
         }
       )
-      res.status(201).json({
-        message: `Compra realizada com sucesso!, ${userUpdated}`
+      res.status(200).json({
+        message: `Produto adicionado ao carrinho com sucesso!, ${product.title}`
+      })
+    } catch (err) {
+      res.status(500).json({ message: err })
+      return
+    }
+  }
+
+  //////// REMOVER PRODUTO DO CARRINHO //////////
+  static async removeFromCart(req, res) {
+    const token = getToken(req)
+    const user = await getUserByToken(token)
+
+    // validações
+    if (!user) {
+      res.status(422).json({ message: 'Usuário não encontrado!' })
+      return
+    }
+    if (!req.body.productId) {
+      res.status(422).json({ message: 'Produto é obrigatório!' })
+      return
+    }
+    if (!user.cart.includes(req.body.productId)) {
+      res.status(422).json({ message: 'Produto não está no carrinho!' })
+      return
+    }
+
+    try {
+      const product = await Product.findById(req.body.productId)
+      const userUpdated = await User.findByIdAndUpdate(
+        { _id: user._id },
+        {
+          $pull: { cart: product._id },
+          new: true
+        }
+      )
+      res.status(200).json({
+        message: `Produto removido do carrinho com sucesso!, ${userUpdated}`
+      })
+    } catch (err) {
+      res.status(500).json({ message: err })
+      return
+    }
+  }
+
+  //////// RESGATAR CARRINHO DO USUÁRIO //////////
+  static async getUserCart(req, res) {
+    const token = getToken(req)
+    const user = await getUserByToken(token)
+
+    try {
+      const userWithCart = await User.findById(user._id).populate({
+        path: 'cart',
+        options: { sort: { date: -1 } }
+      })
+      if (!userWithCart.cart.length) {
+        res.status(422).json({ message: 'O carrinho está vazio!' })
+        return
+      }
+      res.status(200).json(userWithCart.cart)
+    } catch (err) {
+      res.status(500).json({ message: err })
+      return
+    }
+  }
+
+  //////// FINALIZAR COMPRA //////////
+  static async registerPurchase(req, res) {
+    const token = getToken(req)
+    const user = await getUserByToken(token)
+
+    const { total } = req.body
+
+    // validações
+    if (!user) {
+      res.status(422).json({ message: 'Usuário não encontrado!' })
+      return
+    }
+    if (!user.cart.length) {
+      res.status(422).json({ message: 'O carrinho está vazio!' })
+      return
+    }
+    if (!total) {
+      res.status(422).json({ message: 'O preço total é obrigatório!' })
+      return
+    }
+
+    try {
+      const purchase = await Purchase.create({
+        buyer: user._id,
+        products: user.cart,
+        total
+      })
+
+      const userUpdated = await User.findByIdAndUpdate(
+        { _id: user._id },
+        {
+          $push: { purchases: purchase._id },
+          $set: { cart: [] },
+          new: true
+        }
+      )
+
+      res.status(200).json({
+        message: `Compra finalizada com sucesso!, ${
+          (userUpdated, 'Total: ' + ' R$ ' + total)
+        }`
       })
     } catch (err) {
       res.status(500).json({ message: err })

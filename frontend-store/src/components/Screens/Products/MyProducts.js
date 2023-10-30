@@ -82,10 +82,7 @@ const MyProducts = ({ navigation }) => {
             <View style={styles.productDetails}>
               <Text style={styles.productTitle}>{item.title}</Text>
               <Text style={styles.productPrice}>
-                {(
-                  item.price -
-                  item.price * (item.discount / 100)
-                ).toLocaleString('pt-BR', {
+                {item.finalPrice.toLocaleString('pt-BR', {
                   style: 'currency',
                   currency: 'BRL'
                 })}

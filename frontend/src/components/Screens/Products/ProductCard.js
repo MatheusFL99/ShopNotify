@@ -1,15 +1,17 @@
-import React, { useState, useContext, useEffect } from 'react'
-import { View, Text, Image, TouchableOpacity, Modal } from 'react-native'
+import React, { useState, useContext, useCallback } from 'react'
+import { View, Text, Image, TouchableOpacity, Modal, Alert } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { AuthContext } from '../../../context/AuthContext'
 import axios from 'axios'
 import defaultUrl from '../../../utils/defaultUrl'
+import { useFocusEffect } from '@react-navigation/native'
 
 export default function ProductCard({
   image,
   category,
   title,
   price,
+  finalPrice,
   discount,
   description,
   store,
@@ -17,12 +19,11 @@ export default function ProductCard({
   isFavorite
 }) {
   const defaultURL = defaultUrl()
-  const FinalPrice = price - (price * discount) / 100
   const formattedPrice = price.toLocaleString('pt-BR', {
     style: 'currency',
     currency: 'BRL'
   })
-  const formattedPriceFinal = FinalPrice.toLocaleString('pt-BR', {
+  const formattedPriceFinal = finalPrice.toLocaleString('pt-BR', {
     style: 'currency',
     currency: 'BRL'
   })
@@ -104,9 +105,35 @@ export default function ProductCard({
       })
   }
 
-  useEffect(() => {
-    checkIfFavorited()
-  }, [userToken])
+  const addToCart = async () => {
+    const productId = _id
+    await axios
+      .put(
+        `${defaultURL}/purchases/addtocart`,
+        {
+          productId: productId
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`
+          }
+        }
+      )
+      .then(res => {
+        console.log('Produto adicionado ao carrinho!')
+        Alert.alert('Produto adicionado ao carrinho!')
+        console.log(res.data)
+      })
+      .catch(err => {
+        console.log(err.response.data)
+      })
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      checkIfFavorited()
+    }, [userToken])
+  )
 
   const closeModal = () => {
     setModalVisible(false)
@@ -150,7 +177,7 @@ export default function ProductCard({
           {description}
         </Text>
         <TouchableOpacity
-          onPress={() => setModalVisible(true)}
+          onPress={addToCart}
           className={`flex-row justify-center rounded-full ${
             cupomResgatado ? 'bg-gray-500' : 'bg-black/90 dark:bg-white/90'
           } p-3 w-10/12 self-center mt-5`}
@@ -169,7 +196,7 @@ export default function ProductCard({
             </View>
           ) : (
             <Text className="text-white dark:text-black font-bold">
-              Resgatar Produto
+              Adicionar ao carrinho
             </Text>
           )}
         </TouchableOpacity>
@@ -196,13 +223,15 @@ export default function ProductCard({
         <View
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         >
-          <Image
-            source={require('../../../../assets/QRCode.png')}
-            style={{ width: 200, height: 200 }}
-          />
-          <TouchableOpacity onPress={closeModal} style={{ marginTop: 20 }}>
-            <Text style={{ color: 'blue' }}>Close</Text>
-          </TouchableOpacity>
+          <Text>Produto adicionado ao carrinho!{'\n'}</Text>
+          <View style={{}}>
+            <TouchableOpacity onPress={closeModal} style={{ marginTop: 20 }}>
+              <Text style={{ color: 'blue' }}>Cancelar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{ marginTop: 20 }}>
+              <Text> Ver carrinho</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
     </View>

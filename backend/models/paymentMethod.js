@@ -1,29 +1,26 @@
 const mongoose = require('mongoose')
 
-const addressSchema = new mongoose.Schema({
-  name: {
-    type: String
-  },
-  streetaddress: {
+const paymentMethodSchema = new mongoose.Schema({
+  paymentName: {
     type: String,
     required: true
   },
-  complement: {
-    type: String
-  },
-  city: {
+  cardNumber: {
     type: String,
     required: true
   },
-  state: {
+  cvv: {
     type: String,
     required: true
   },
-  zipcode: {
+  expirationDate: {
     type: String,
     required: true
   },
-  country: String,
+  titularName: {
+    type: String,
+    required: true
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -34,6 +31,6 @@ const addressSchema = new mongoose.Schema({
   }
 })
 
-const Address = mongoose.model('Address', addressSchema)
+const PaymentMethod = mongoose.model('PaymentMethod', paymentMethodSchema)
 
-module.exports = Address
+module.exports = PaymentMethod

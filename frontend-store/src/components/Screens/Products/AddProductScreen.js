@@ -46,7 +46,7 @@ const AddProductScreen = ({ navigation }) => {
         console.log(response.data)
       }
     } catch (error) {
-      console.error('Error creating product:', error)
+      console.error('Error creating product:', error.response.data)
       Alert.alert('Error', 'Erro ao atualizar o produto.')
     }
   }
@@ -70,7 +70,7 @@ const AddProductScreen = ({ navigation }) => {
         keyboardType="numeric"
       />
 
-      <Text style={styles.label}>Disconto</Text>
+      <Text style={styles.label}>Desconto</Text>
       <TextInput
         style={styles.input}
         placeholder="Digite a porcentagem de desconto do produto"

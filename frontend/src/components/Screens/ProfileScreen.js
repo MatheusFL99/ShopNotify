@@ -1,12 +1,21 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
+import React, { useState, useContext, useCallback } from 'react'
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  RefreshControl
+} from 'react-native'
 import defaultUrl from '../../utils/defaultUrl'
 import { AuthContext } from '../../context/AuthContext'
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons'
 import axios from 'axios'
+import { useFocusEffect } from '@react-navigation/native'
 
 const ProfileScreen = ({ navigation }) => {
   const [user, setUser] = useState(null)
+  const [refreshing, setRefreshing] = useState(false)
   const defaultURL = defaultUrl()
   const defaultImage = 'https://i.stack.imgur.com/l60Hf.png'
   const { userToken } = useContext(AuthContext)
@@ -21,12 +30,21 @@ const ProfileScreen = ({ navigation }) => {
       setUser(response.data)
     } catch (error) {
       console.error('Erro ao buscar os dados do usuário:', error)
+    } finally {
+      setRefreshing(false)
     }
   }
 
-  useEffect(() => {
+  handleRefresh = () => {
+    setRefreshing(true)
     fetchUserData()
-  }, [userToken])
+  }
+
+  useFocusEffect(
+    React.useCallback(() => {
+      handleRefresh()
+    }, [userToken])
+  )
 
   const myAddressHandler = () => {
     navigation.navigate('Endereços')

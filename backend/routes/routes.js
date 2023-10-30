@@ -53,6 +53,13 @@ router.get('/products/:id', productController.getProductById)
 router.get('/products/store/:id', productController.getProductsByStore)
 
 // rotas definidas para a api purchases
+router.put('/purchases/addtocart', verifyUser, purchaseController.addToCart)
+router.put(
+  '/purchases/removefromcart',
+  verifyUser,
+  purchaseController.removeFromCart
+)
+router.get('/purchases/cart', verifyUser, purchaseController.getUserCart)
 router.post(
   '/purchases/register',
   verifyUser,

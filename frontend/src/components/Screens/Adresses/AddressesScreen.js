@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useCallback } from 'react'
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
 import defaultUrl from '../../../utils/defaultUrl'
 import { AuthContext } from '../../../context/AuthContext'
 import axios from 'axios'
+import { useFocusEffect } from '@react-navigation/native'
 
 const AddressesScreen = ({ navigation }) => {
   const [addresses, setAddresses] = useState([])
@@ -65,9 +66,11 @@ const AddressesScreen = ({ navigation }) => {
     }
   }
 
-  useEffect(() => {
-    handleRefresh()
-  }, [userToken])
+  useFocusEffect(
+    useCallback(() => {
+      handleRefresh()
+    }, [userToken])
+  )
 
   return (
     <SafeAreaView style={styles.container}>

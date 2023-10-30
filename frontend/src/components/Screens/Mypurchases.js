@@ -1,19 +1,22 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useContext, useCallback } from 'react'
 import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Image,
-  FlatList
+  FlatList,
+  RefreshControl
 } from 'react-native'
 import axios from 'axios'
 import defaultUrl from '../../utils/defaultUrl'
 import { AuthContext } from '../../context/AuthContext'
 import { FontAwesome } from '@expo/vector-icons'
+import { useFocusEffect } from '@react-navigation/native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const PurchaseHistory = () => {
   const [purchases, setPurchases] = useState([])
+  const [refreshing, setRefreshing] = useState(false)
   const defaultURL = defaultUrl()
   const { userToken } = useContext(AuthContext)
 
@@ -27,13 +30,21 @@ const PurchaseHistory = () => {
       setPurchases(response.data)
     } catch (error) {
       console.error('Erro ao carregar histórico de compras:', error)
+    } finally {
+      setRefreshing(false)
     }
   }
 
-  useEffect(() => {
+  const handleRefresh = () => {
+    setRefreshing(true)
     fetchPurchases()
-    console.log(purchases)
-  }, [userToken])
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      handleRefresh()
+    }, [userToken])
+  )
 
   const renderPurchaseItem = ({ item: purchase }) => (
     <View style={styles.purchaseContainer}>
@@ -78,12 +89,17 @@ const PurchaseHistory = () => {
   )
 
   return (
-    <FlatList
-      data={purchases}
-      renderItem={renderPurchaseItem}
-      keyExtractor={purchase => purchase._id}
-      style={styles.container}
-    />
+    <SafeAreaView style={{ flex: 1 }}>
+      <FlatList
+        data={purchases}
+        renderItem={renderPurchaseItem}
+        keyExtractor={purchase => purchase._id}
+        style={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
+      />
+    </SafeAreaView>
   )
 }
 

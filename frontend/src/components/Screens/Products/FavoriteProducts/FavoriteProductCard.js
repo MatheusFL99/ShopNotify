@@ -1,15 +1,17 @@
-import React, { useState, useContext, useEffect } from 'react'
-import { View, Text, Image, TouchableOpacity, Modal } from 'react-native'
+import React, { useState, useContext, useCallback } from 'react'
+import { View, Text, Image, TouchableOpacity, Modal, Alert } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { AuthContext } from '../../../../context/AuthContext'
 import axios from 'axios'
 import defaultUrl from '../../../../utils/defaultUrl'
+import { useFocusEffect } from '@react-navigation/native'
 
 export default function FavoriteProductCard({
   image,
   category,
   title,
   price,
+  finalPrice,
   discount,
   description,
   store,
@@ -17,12 +19,11 @@ export default function FavoriteProductCard({
   isFavorite
 }) {
   const defaultURL = defaultUrl()
-  const FinalPrice = price - (price * discount) / 100
   const formattedPrice = price.toLocaleString('pt-BR', {
     style: 'currency',
     currency: 'BRL'
   })
-  const formattedPriceFinal = FinalPrice.toLocaleString('pt-BR', {
+  const formattedPriceFinal = finalPrice.toLocaleString('pt-BR', {
     style: 'currency',
     currency: 'BRL'
   })
@@ -104,9 +105,35 @@ export default function FavoriteProductCard({
       })
   }
 
-  useEffect(() => {
-    checkIfFavorited()
-  }, [userToken])
+  const addToCart = async () => {
+    const productId = _id
+    await axios
+      .put(
+        `${defaultURL}/purchases/addtocart`,
+        {
+          productId: productId
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`
+          }
+        }
+      )
+      .then(res => {
+        console.log('Produto adicionado ao carrinho!')
+        Alert.alert('Produto adicionado ao carrinho!')
+        console.log(res.data)
+      })
+      .catch(err => {
+        console.log(err.response.data)
+      })
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      checkIfFavorited()
+    }, [userToken])
+  )
 
   const closeModal = () => {
     setModalVisible(false)
@@ -169,7 +196,7 @@ export default function FavoriteProductCard({
             </View>
           ) : (
             <Text className="text-white dark:text-black font-bold">
-              Resgatar Produto
+              Adicionar ao carrinho
             </Text>
           )}
         </TouchableOpacity>

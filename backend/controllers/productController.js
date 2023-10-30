@@ -41,6 +41,7 @@ module.exports = class productController {
       title,
       price,
       discount,
+      finalPrice: price - (price * discount) / 100,
       description,
       category,
       image,
@@ -88,6 +89,7 @@ module.exports = class productController {
         {
           title,
           price,
+          finalPrice: price - (price * discount) / 100,
           discount,
           description,
           category,

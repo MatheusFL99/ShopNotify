@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { FlatList, StyleSheet, View, Text } from 'react-native'
+import React, { useEffect, useState, useContext, useCallback } from 'react'
+import { FlatList, View, Text } from 'react-native'
 import axios from 'axios'
 import FavoriteProductCard from './FavoriteProductCard'
 import defaultUrl from '../../../../utils/defaultUrl'
 import { AuthContext } from '../../../../context/AuthContext'
+import { useFocusEffect } from '@react-navigation/native'
 
 export default function FavoriteProductsList() {
   const [products, setProducts] = useState([])
@@ -11,10 +12,6 @@ export default function FavoriteProductsList() {
   const [searchQuery, setSearchQuery] = useState('')
   const { userToken } = useContext(AuthContext)
   const [refreshing, setRefreshing] = useState(false)
-
-  useEffect(() => {
-    fetchProducts()
-  }, [userToken])
 
   const fetchProducts = async () => {
     try {
@@ -24,13 +21,24 @@ export default function FavoriteProductsList() {
           Authorization: `Bearer ${userToken}`
         }
       })
-      setProducts(response.data)
+      setProducts(response.data.reverse())
     } catch (error) {
       console.log(error.response.data)
     } finally {
       setRefreshing(false)
     }
   }
+
+  const handleRefresh = () => {
+    setRefreshing(true)
+    fetchProducts()
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      handleRefresh()
+    }, [userToken])
+  )
 
   const filteredProducts = products.filter(product => {
     return product.title.toLowerCase().includes(searchQuery.toLowerCase())
