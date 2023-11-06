@@ -195,7 +195,7 @@ export default function ProductCard({
               />
             </View>
           ) : (
-            <Text className="text-white dark:text-black font-bold">
+            <Text className=" text-white dark:text-black font-bold">
               Adicionar ao carrinho
             </Text>
           )}

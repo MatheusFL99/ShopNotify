@@ -10,6 +10,7 @@ import EditAddressScreen from '../components/Screens/Adresses/EditAddressScreen'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Ionicons } from 'react-native-vector-icons'
 import CartScreen from '../components/Screens/CartScreen'
+import MyPaymentMethodsScreen from '../components/Screens/Payment/MyPaymentMethodsScreen'
 
 const Tab = createBottomTabNavigator()
 
@@ -17,7 +18,7 @@ const AppStack = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarActiveTintColor: 'tomato',
+        tabBarActiveTintColor: 'red',
         tabBarInactiveTintColor: 'gray',
         tabBarStyle: [
           {
@@ -82,6 +83,11 @@ const AppStack = () => {
       <Tab.Screen
         name="Editar Endereço"
         component={EditAddressScreen}
+        options={{ tabBarItemStyle: { display: 'none' } }}
+      />
+      <Tab.Screen
+        name="Pagamentos"
+        component={MyPaymentMethodsScreen}
         options={{ tabBarItemStyle: { display: 'none' } }}
       />
     </Tab.Navigator>

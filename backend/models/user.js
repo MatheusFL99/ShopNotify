@@ -32,6 +32,16 @@ const userSchema = new mongoose.Schema({
       ref: 'Address'
     }
   ],
+  paymentMethods: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'PaymentMethod'
+    }
+  ],
+  defaultPaymentMethod: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'PaymentMethod'
+  },
   cart: [
     {
       type: mongoose.Schema.Types.ObjectId,

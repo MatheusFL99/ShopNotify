@@ -7,8 +7,8 @@ import {
   StyleSheet,
   Image,
   ActivityIndicator,
-  Alert,
-  RefreshControl
+  RefreshControl,
+  Modal
 } from 'react-native'
 import axios from 'axios'
 import defaultUrl from '../../utils/defaultUrl'
@@ -17,6 +17,8 @@ import { useFocusEffect } from '@react-navigation/native'
 
 const CartScreen = () => {
   const defaultURL = defaultUrl()
+  const [modalVisible, setModalVisible] = useState(false)
+  const [itemqntt, setItemqntt] = useState(1)
   const { userToken } = useContext(AuthContext)
   const [cart, setCart] = useState([])
   const [refreshing, setRefreshing] = useState(false)
@@ -30,7 +32,7 @@ const CartScreen = () => {
       })
       setCart(response.data.reverse())
     } catch (err) {
-      console.error('Erro ao carregar carrinho:', err)
+      console.error('Erro ao carregar carrinho:', err.response.data.message)
     } finally {
       setRefreshing(false)
     }
@@ -51,7 +53,6 @@ const CartScreen = () => {
       )
       if (response.status == 200) {
         console.log('Produto removido do carrinho com sucesso!')
-        Alert.alert('Produto removido do carrinho com sucesso!')
         handleRefresh()
       }
     } catch (err) {
@@ -74,6 +75,13 @@ const CartScreen = () => {
     return acc + item.finalPrice
   }, 0)
 
+  if (cart.length === 0) {
+    return (
+      <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+        <Text>O seu carrinho está vazio.</Text>
+      </View>
+    )
+  }
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <Image source={{ uri: item.image }} style={styles.itemImage} />
@@ -81,6 +89,7 @@ const CartScreen = () => {
         <Text numberOfLines={1} ellipsizeMode="tail" style={styles.itemTitle}>
           {item.title}
         </Text>
+        <Text>{item.store.name}</Text>
         <Text>
           {item.finalPrice.toLocaleString('pt-BR', {
             style: 'currency',
@@ -89,21 +98,13 @@ const CartScreen = () => {
         </Text>
       </View>
       <TouchableOpacity
-        style={styles.deleteButton}
+        style={styles.cancelButton}
         onPress={() => removeItem(item._id)}
       >
-        <Text>Remover</Text>
+        <Text style={styles.cancelText}>Remover</Text>
       </TouchableOpacity>
     </View>
   )
-
-  if (cart.length === 0) {
-    return (
-      <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-        <Text>O seu carrinho está vazio.</Text>
-      </View>
-    )
-  }
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -130,10 +131,47 @@ const CartScreen = () => {
                 currency: 'BRL'
               })}
             </Text>
-            <TouchableOpacity style={styles.proceedButton}>
+            <TouchableOpacity
+              style={styles.proceedButton}
+              onPress={() => setModalVisible(true)}
+            >
               <Text style={styles.buttonText}>Concluir Compra</Text>
             </TouchableOpacity>
           </View>
+
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+          >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Text style={styles.modalText}>
+                  Escolha o método de pagamento
+                </Text>
+                <View style={{ flexDirection: 'row' }}>
+                  <TouchableOpacity>
+                    <Text style={styles.modalButtons}>
+                      Pagar pelo aplicativo
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity>
+                    <Text style={styles.modalButtons}>
+                      Pagar direto no local
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  onPress={() => {
+                    setModalVisible(!modalVisible)
+                  }}
+                >
+                  <Text style={styles.cancelText}>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
         </>
       )}
     </View>
@@ -163,6 +201,20 @@ const styles = StyleSheet.create({
     marginRight: 10,
     fontWeight: 'bold'
   },
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10
+  },
+  quantityButton: {
+    width: 20,
+    height: 20,
+    backgroundColor: 'lightgray',
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 5
+  },
   deleteButton: {
     marginLeft: 10,
     padding: 10,
@@ -179,7 +231,7 @@ const styles = StyleSheet.create({
   },
   proceedButton: {
     padding: 15,
-    backgroundColor: 'tomato',
+    backgroundColor: 'red',
     alignItems: 'center',
     margin: 10,
     borderRadius: 8
@@ -189,6 +241,46 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     textTransform: 'uppercase'
+  },
+  modalButtons: {
+    backgroundColor: 'red',
+    padding: 10,
+    borderRadius: 5,
+    marginHorizontal: 5,
+    color: 'white',
+    fontWeight: 'bold',
+    marginBottom: 10
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 35,
+    alignItems: 'center',
+    elevation: 5
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center'
+  },
+  cancelButton: {
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: 'red',
+    padding: 10,
+    borderRadius: 8
+  },
+  cancelText: {
+    minHeight: 20,
+    minWidth: 70,
+    color: 'red',
+    textAlign: 'center'
   }
 })
 

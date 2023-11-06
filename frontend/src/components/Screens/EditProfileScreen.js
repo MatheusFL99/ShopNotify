@@ -3,7 +3,7 @@ import {
   View,
   Text,
   TextInput,
-  Button,
+  TouchableOpacity,
   StyleSheet,
   ScrollView,
   Alert
@@ -116,7 +116,9 @@ const EditProfileScreen = ({ navigation }) => {
         />
       </View>
 
-      <Button title="Save" onPress={saveHandler} color="#4CAF50" />
+      <TouchableOpacity style={styles.saveButton} onPress={saveHandler}>
+        <Text style={styles.saveText}>Salvar</Text>
+      </TouchableOpacity>
     </ScrollView>
   )
 }
@@ -148,6 +150,18 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     backgroundColor: '#fff'
+  },
+  saveButton: {
+    backgroundColor: 'red',
+    padding: 10,
+    borderRadius: 8
+  },
+  saveText: {
+    minHeight: 20,
+    minWidth: 100,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center'
   }
 })
 

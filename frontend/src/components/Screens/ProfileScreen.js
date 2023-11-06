@@ -1,12 +1,5 @@
-import React, { useState, useContext, useCallback } from 'react'
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  RefreshControl
-} from 'react-native'
+import React, { useState, useContext, useEffect } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import defaultUrl from '../../utils/defaultUrl'
 import { AuthContext } from '../../context/AuthContext'
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons'
@@ -40,11 +33,9 @@ const ProfileScreen = ({ navigation }) => {
     fetchUserData()
   }
 
-  useFocusEffect(
-    React.useCallback(() => {
-      handleRefresh()
-    }, [userToken])
-  )
+  useEffect(() => {
+    handleRefresh()
+  }, [userToken])
 
   const myAddressHandler = () => {
     navigation.navigate('Endereços')
@@ -60,6 +51,10 @@ const ProfileScreen = ({ navigation }) => {
 
   const myFavoritesHandler = () => {
     navigation.navigate('Favoritos')
+  }
+
+  const paymentMethodsHandler = () => {
+    navigation.navigate('Pagamentos')
   }
 
   return (
@@ -108,7 +103,7 @@ const ProfileScreen = ({ navigation }) => {
             </View>
             <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.item}>
+          <TouchableOpacity style={styles.item} onPress={paymentMethodsHandler}>
             <MaterialCommunityIcons
               name="credit-card-outline"
               size={24}
