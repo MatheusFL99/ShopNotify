@@ -34,6 +34,23 @@ module.exports = class paymentController {
       res.status(422).json({ message: 'Data de expiração é obrigatório!' })
       return
     }
+
+    // verifica se a data de validade do cartão é válida
+    const expirationDateArray = expirationDate.split('/')
+    const expirationMonth = expirationDateArray[0]
+    const expirationYear = expirationDateArray[1]
+    const today = new Date()
+    const currentMonth = today.getMonth() + 1
+    const currentYear = today.getFullYear()
+    if (expirationYear < currentYear) {
+      res.status(422).json({ message: 'Cartão expirado!' })
+      return
+    }
+    if (expirationYear == currentYear && expirationMonth < currentMonth) {
+      res.status(422).json({ message: 'Cartão expirado!' })
+      return
+    }
+
     if (!req.body.titularName) {
       res.status(422).json({ message: 'Nome do titular é obrigatório!' })
       return
@@ -54,7 +71,14 @@ module.exports = class paymentController {
 
     try {
       const newPaymentMethod = await paymentMethod.save()
-      res.status(200).json(newPaymentMethod)
+      const userUpdated = await User.findByIdAndUpdate(
+        { _id: user._id },
+        {
+          $push: { paymentMethods: newPaymentMethod._id },
+          new: true
+        }
+      )
+      res.status(200).json({ message: newPaymentMethod })
     } catch (err) {
       res.status(500).json({ message: err })
       return

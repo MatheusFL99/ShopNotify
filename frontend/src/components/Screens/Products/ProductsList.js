@@ -5,25 +5,19 @@ import {
   TextInput,
   View,
   Text,
-  RefreshControl
+  RefreshControl,
+  Dimensions
 } from 'react-native'
 import axios from 'axios'
 import ProductCard from './ProductCard'
 import defaultUrl from '../../../utils/defaultUrl'
 import { useFocusEffect } from '@react-navigation/native'
 
-export default function ProductsList() {
+const ProductsList = () => {
   const [products, setProducts] = useState([])
   const [refreshing, setRefreshing] = useState(false)
   const defaultURL = defaultUrl()
   const [searchQuery, setSearchQuery] = useState('')
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchProducts()
-      return () => {}
-    }, [fetchProducts])
-  )
 
   const fetchProducts = async () => {
     try {
@@ -32,17 +26,32 @@ export default function ProductsList() {
       console.log(response.data)
     } catch (error) {
       console.error('Erro ao buscar os produtos:', error)
+    } finally {
+      setRefreshing(false)
     }
   }
 
-  const onRefresh = useCallback(() => {
+  const handleRefresh = () => {
     setRefreshing(true)
-    fetchProducts().then(() => setRefreshing(false))
-  }, [fetchProducts])
+    fetchProducts()
+  }
 
-  const filteredProducts = products.filter(product => {
-    return product.title.toLowerCase().includes(searchQuery.toLowerCase())
-  })
+  useFocusEffect(
+    useCallback(() => {
+      handleRefresh()
+    }, [])
+  )
+
+  const filterProducts = product => {
+    const query = searchQuery.toLowerCase()
+    return (
+      product.title.toLowerCase().includes(query) ||
+      product.category.toLowerCase().includes(query) ||
+      product.store.name.toLowerCase().includes(query)
+    )
+  }
+
+  const filteredProducts = products.filter(filterProducts)
 
   if (products.length === 0) {
     return (
@@ -53,7 +62,7 @@ export default function ProductsList() {
   }
 
   return (
-    <View>
+    <View style={styles.container}>
       <TextInput
         style={styles.searchInput}
         placeholder="Pesquisar..."
@@ -64,25 +73,49 @@ export default function ProductsList() {
         data={filteredProducts}
         keyExtractor={product => product._id}
         renderItem={({ item }) => <ProductCard {...item} />}
-        contentContainerStyle={{
-          paddingHorizontal: 15
-        }}
+        contentContainerStyle={styles.listContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={['red']}
+          />
         }
       />
     </View>
   )
 }
 
+const { width } = Dimensions.get('window')
+const cardMargin = 10
+const cardWidth = width - 2 * cardMargin
+
 const styles = StyleSheet.create({
+  container: {
+    flex: 1
+  },
   searchInput: {
     height: 50,
     borderRadius: 10,
     backgroundColor: 'white',
     borderColor: 'gray',
     borderWidth: 1,
-    margin: 10,
-    padding: 10
+    margin: cardMargin,
+    padding: 10,
+    width: cardWidth
+  },
+  listContent: {
+    paddingHorizontal: cardMargin
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1
+  },
+  productCard: {
+    width: cardWidth,
+    marginVertical: 10
   }
 })
+
+export default ProductsList

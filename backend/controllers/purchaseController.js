@@ -85,10 +85,6 @@ module.exports = class purchaseController {
         path: 'cart',
         options: { sort: { date: -1 } }
       })
-      if (!userWithCart.cart.length) {
-        res.status(422).json({ message: 'O carrinho está vazio!' })
-        return
-      }
       res.status(200).json(userWithCart.cart)
     } catch (err) {
       res.status(500).json({ message: err })
@@ -96,12 +92,11 @@ module.exports = class purchaseController {
     }
   }
 
-  //////// FINALIZAR COMPRA //////////
-  static async registerPurchase(req, res) {
+  //////// FINALIZAR COMPRA PELO APLICATIVO //////////
+  static async registerPurchaseInApp(req, res) {
     const token = getToken(req)
     const user = await getUserByToken(token)
-
-    const { total } = req.body
+    const total = req.body.total
 
     // validações
     if (!user) {
@@ -113,7 +108,7 @@ module.exports = class purchaseController {
       return
     }
     if (!total) {
-      res.status(422).json({ message: 'O preço total é obrigatório!' })
+      res.status(422).json({ message: 'O preço da compra é obrigatório!' })
       return
     }
 
@@ -121,7 +116,7 @@ module.exports = class purchaseController {
       const purchase = await Purchase.create({
         buyer: user._id,
         products: user.cart,
-        total
+        total: total
       })
 
       const userUpdated = await User.findByIdAndUpdate(
@@ -144,6 +139,26 @@ module.exports = class purchaseController {
     }
   }
 
+  /////// RESGATAR PRODUTOS QUE FORAM VENDIDOS POR UMA LOJA //////////
+  static async getStoreProductsSold(req, res) {
+    const token = getToken(req)
+    const store = await getUserByToken(token)
+
+    try {
+      const products = await Product.find({ 'store._id': store._id })
+      const productsSold = await Purchase.find({
+        products: { $in: products }
+      }).populate({
+        path: 'products',
+        populate: { path: 'store' }
+      })
+      res.status(200).json(productsSold)
+    } catch (err) {
+      res.status(500).json({ message: err })
+      return
+    }
+  }
+
   //////// RESGATAR COMPRAS DE UM USUÁRIO //////////
   static async getUserPurchases(req, res) {
     const token = getToken(req)
@@ -152,7 +167,6 @@ module.exports = class purchaseController {
     try {
       const userWithPurchases = await User.findById(user._id).populate({
         path: 'purchases',
-        options: { sort: { date: -1 } },
         populate: {
           path: 'products',
           populate: { path: 'store' }

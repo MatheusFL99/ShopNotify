@@ -1,5 +1,12 @@
-import React, { useState, useContext, useEffect } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
+import React, { useState, useContext, useCallback } from 'react'
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ScrollView
+} from 'react-native'
 import defaultUrl from '../../utils/defaultUrl'
 import { AuthContext } from '../../context/AuthContext'
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons'
@@ -11,7 +18,7 @@ const ProfileScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false)
   const defaultURL = defaultUrl()
   const defaultImage = 'https://i.stack.imgur.com/l60Hf.png'
-  const { userToken } = useContext(AuthContext)
+  const { userToken, logout } = useContext(AuthContext)
 
   const fetchUserData = async () => {
     try {
@@ -33,9 +40,11 @@ const ProfileScreen = ({ navigation }) => {
     fetchUserData()
   }
 
-  useEffect(() => {
-    handleRefresh()
-  }, [userToken])
+  useFocusEffect(
+    useCallback(() => {
+      handleRefresh()
+    }, [userToken])
+  )
 
   const myAddressHandler = () => {
     navigation.navigate('Endereços')
@@ -58,7 +67,7 @@ const ProfileScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {user && (
         <>
           <View style={styles.header}>
@@ -141,9 +150,23 @@ const ProfileScreen = ({ navigation }) => {
             </View>
             <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
           </TouchableOpacity>
+          <TouchableOpacity style={styles.item} onPress={logout}>
+            <MaterialCommunityIcons
+              name="logout-variant"
+              size={24}
+              color="red"
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.itemText}>Sair</Text>
+              <Text style={styles.itemDescription}>
+                Desconecte-se da sua conta
+              </Text>
+            </View>
+            <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
+          </TouchableOpacity>
         </>
       )}
-    </View>
+    </ScrollView>
   )
 }
 

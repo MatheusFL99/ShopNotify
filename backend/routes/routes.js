@@ -94,9 +94,9 @@ router.put(
 )
 router.get('/purchases/cart', verifyUser, purchaseController.getUserCart)
 router.post(
-  '/purchases/register',
+  '/purchases/finalizepurchaseapp',
   verifyUser,
-  purchaseController.registerPurchase
+  purchaseController.registerPurchaseInApp
 )
 router.get(
   '/purchases/mypurchases',

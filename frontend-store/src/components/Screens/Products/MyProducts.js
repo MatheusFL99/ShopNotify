@@ -7,7 +7,8 @@ import {
   Image,
   StyleSheet,
   Alert,
-  RefreshControl
+  RefreshControl,
+  SafeAreaView
 } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
 import defaultUrl from '../../../utils/defaultUrl'
@@ -27,7 +28,7 @@ const MyProducts = ({ navigation }) => {
           Authorization: `Bearer ${storeToken}`
         }
       })
-      const data = response.data
+      const data = response.data.reverse()
       console.log('Fetched Data:', data)
       setProducts(data)
     } catch (error) {
@@ -74,41 +75,43 @@ const MyProducts = ({ navigation }) => {
           <Text style={styles.buttonText}>Adicionar Produto</Text>
         </TouchableOpacity>
       </View>
-      <FlatList
-        data={products}
-        renderItem={({ item }) => (
-          <View style={styles.productCard}>
-            <Image source={{ uri: item.image }} style={styles.productImage} />
-            <View style={styles.productDetails}>
-              <Text style={styles.productTitle}>{item.title}</Text>
-              <Text style={styles.productPrice}>
-                {item.finalPrice.toLocaleString('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL'
-                })}
-              </Text>
+      <SafeAreaView style={styles.flatListContainer}>
+        <FlatList
+          data={products}
+          renderItem={({ item }) => (
+            <View style={styles.productCard}>
+              <Image source={{ uri: item.image }} style={styles.productImage} />
+              <View style={styles.productDetails}>
+                <Text style={styles.productTitle}>{item.title}</Text>
+                <Text style={styles.productPrice}>
+                  {item.finalPrice.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                  })}
+                </Text>
+              </View>
+              <View style={styles.buttons}>
+                <TouchableOpacity
+                  style={styles.editButton}
+                  onPress={() => editProductHandler(item._id)}
+                >
+                  <Text style={styles.buttonText}>Edit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => deleteProduct(item._id)}
+                >
+                  <Text style={styles.buttonText}>Delete</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={styles.buttons}>
-              <TouchableOpacity
-                style={styles.editButton}
-                onPress={() => editProductHandler(item._id)}
-              >
-                <Text style={styles.buttonText}>Edit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => deleteProduct(item._id)}
-              >
-                <Text style={styles.buttonText}>Delete</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-        keyExtractor={item => item._id}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      />
+          )}
+          keyExtractor={item => item._id}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
+      </SafeAreaView>
     </View>
   )
 }
@@ -118,6 +121,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: '#f7f7f7'
+  },
+  flatListContainer: {
+    flex: 1
   },
   addButtonContainer: {
     marginVertical: 10,

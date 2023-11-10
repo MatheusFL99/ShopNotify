@@ -1,12 +1,20 @@
 import React, { useState, useContext, useCallback } from 'react'
-import { View, Text, Image, TouchableOpacity, Modal, Alert } from 'react-native'
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Modal,
+  Alert,
+  StyleSheet
+} from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { AuthContext } from '../../../../context/AuthContext'
 import axios from 'axios'
 import defaultUrl from '../../../../utils/defaultUrl'
 import { useFocusEffect } from '@react-navigation/native'
 
-export default function FavoriteProductCard({
+const FavoriteProductCard = ({
   image,
   category,
   title,
@@ -17,7 +25,7 @@ export default function FavoriteProductCard({
   store,
   _id,
   isFavorite
-}) {
+}) => {
   const defaultURL = defaultUrl()
   const formattedPrice = price.toLocaleString('pt-BR', {
     style: 'currency',
@@ -140,78 +148,68 @@ export default function FavoriteProductCard({
   }
 
   return (
-    <View className={'w-full bg-white dark:bg-gray-50/10 rounded-3xl p-5 my-5'}>
-      <View className="bg-white rounded-xl relative">
+    <View style={styles.card}>
+      <View style={styles.imageContainer}>
         <Image
           source={{ uri: image }}
           className={'w-full h-72'}
-          style={{ resizeMode: 'contain' }}
+          style={styles.productImage}
         />
         {discount && (
-          <View className="absolute top-2 right-2">
-            <Text className="bg-green-500 rounded-full px-3 py-3 text-white text-s font-bold">
-              {discount}% OFF
-            </Text>
+          <View style={styles.discountBadge}>
+            <Text style={styles.discountText}>{discount}% OFF</Text>
           </View>
         )}
       </View>
-      <View className="mt-5">
-        <Text className={'text-sm text-black/60 dark:text-white/70'}>
+      <View style={styles.storeCategoryContainer}>
+        <Text style={styles.storeCategoryText}>
           {store.name} - {category}
         </Text>
-        <Text className={'text-lg font-semibold dark:text-white'}>{title}</Text>
-        <Text className={'text-1xl dark:text-white line-through'}>
-          {formattedPrice}
-        </Text>
-        <View className={'flex-row justify-between items-center my-3'}>
-          <View className={'flex-row items-center gap-3'}>
+        <Text style={styles.titleText}>{title}</Text>
+        <Text style={styles.originalPriceText}>{formattedPrice}</Text>
+        <View style={styles.priceContainer}>
+          <View style={styles.finalPriceText}>
             <Text className="text-3xl text-green font-extrabold dark:text-white">
               {formattedPriceFinal}
             </Text>
           </View>
         </View>
-        <Text
-          numberOfLines={2}
-          className={'text-sm text-black/60 dark:text-white/70'}
-        >
+        <Text numberOfLines={2} style={styles.descriptionText}>
           {description}
         </Text>
         <TouchableOpacity
-          onPress={() => setModalVisible(true)}
-          className={`flex-row justify-center rounded-full ${
-            cupomResgatado ? 'bg-gray-500' : 'bg-black/90 dark:bg-white/90'
-          } p-3 w-10/12 self-center mt-5`}
+          onPress={addToCart}
+          style={[
+            styles.addToCartButton,
+            cupomResgatado && styles.cupomResgatado
+          ]}
         >
           {cupomResgatado ? (
-            <View className="flex-row items-center">
-              <Text className="text-white dark:text-black font-bold">
-                Cupom resgatado
-              </Text>
+            <View style={styles.cupomInfoContainer}>
+              <Text style={styles.cupomText}>Cupom resgatado</Text>
               <Ionicons
                 name="ios-checkmark-outline"
                 size={20}
                 color="white"
-                style={{ marginLeft: 5 }}
+                style={styles.checkmarkIcon}
               />
             </View>
           ) : (
-            <Text className="text-white dark:text-black font-bold">
-              Adicionar ao carrinho
-            </Text>
+            <Text style={styles.addToCartText}>Adicionar ao carrinho</Text>
           )}
         </TouchableOpacity>
 
         {favorited ? (
           <TouchableOpacity
             onPress={() => removefromfavorites(_id, userToken)}
-            style={{ alignSelf: 'flex-end', marginTop: 5 }}
+            style={styles.favoritedButton}
           >
             <Ionicons name={'star'} size={25} color={'yellow'} />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             onPress={() => addtofavorites(_id, userToken)}
-            style={{ alignSelf: 'flex-end', marginTop: 5 }}
+            style={styles.favoriteButton}
           >
             <Ionicons name={'star-outline'} size={25} color={'black'} />
           </TouchableOpacity>
@@ -223,15 +221,125 @@ export default function FavoriteProductCard({
         <View
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         >
-          <Image
-            source={require('../../../../../assets/QRCode.png')}
-            style={{ width: 200, height: 200 }}
-          />
-          <TouchableOpacity onPress={closeModal} style={{ marginTop: 20 }}>
-            <Text style={{ color: 'blue' }}>Close</Text>
-          </TouchableOpacity>
+          <Text>Produto adicionado ao carrinho!{'\n'}</Text>
+          <View style={{}}>
+            <TouchableOpacity onPress={closeModal} style={{ marginTop: 20 }}>
+              <Text style={{ color: 'blue' }}>Cancelar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{ marginTop: 20 }}>
+              <Text> Ver carrinho</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  card: {
+    width: '100%',
+    backgroundColor: 'white',
+    borderRadius: 30,
+    padding: 20,
+    marginTop: 20,
+    marginBottom: 20
+  },
+  imageContainer: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    position: 'relative'
+  },
+  productImage: {
+    width: '100%',
+    height: 288,
+    resizeMode: 'contain'
+  },
+  discountBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8
+  },
+  discountText: {
+    backgroundColor: 'green',
+    borderRadius: 9999,
+    padding: 12,
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold'
+  },
+  storeCategoryContainer: {
+    marginTop: 20
+  },
+  storeCategoryText: {
+    fontSize: 12,
+    color: 'rgba(0, 0, 0, 0.6)',
+    fontWeight: 'normal'
+  },
+  titleText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black'
+  },
+  originalPriceText: {
+    fontSize: 16,
+    textDecorationLine: 'line-through',
+    color: 'black',
+    opacity: 0.7
+  },
+  priceContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 12
+  },
+  finalPriceText: {
+    fontSize: 24,
+    color: 'green',
+    fontWeight: '800'
+  },
+  descriptionText: {
+    fontSize: 12,
+    color: 'rgba(0, 0, 0, 0.6)'
+  },
+  addToCartButton: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    borderRadius: 9999,
+    padding: 12,
+    width: '83.333%', // 10/12 in percentage
+    alignSelf: 'center',
+    marginTop: 20,
+    backgroundColor: 'black'
+  },
+  addToCartText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center'
+  },
+  cupomResgatado: {
+    backgroundColor: 'gray'
+  },
+  cupomInfoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  cupomText: {
+    color: 'white',
+    fontWeight: 'bold'
+  },
+  checkmarkIcon: {
+    marginLeft: 5
+  },
+  favoritedButton: {
+    alignSelf: 'flex-end',
+    marginTop: 5
+  },
+  favoriteButton: {
+    alignSelf: 'flex-end',
+    marginTop: 5
+  }
+})
+
+export default FavoriteProductCard

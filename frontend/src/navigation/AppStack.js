@@ -1,4 +1,8 @@
 import React from 'react'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { Ionicons } from 'react-native-vector-icons'
+
+// screen components
 import ProductsPage from '../components/Screens/Products/ProductsPage'
 import FavoriteProductsPage from '../components/Screens/Products/FavoriteProducts/FavoriteProductsPage'
 import ProfileScreen from '../components/Screens/ProfileScreen'
@@ -7,17 +11,18 @@ import EditProfileScreen from '../components/Screens/EditProfileScreen'
 import AddressesScreen from '../components/Screens/Adresses/AddressesScreen'
 import CreateAddressScreen from '../components/Screens/Adresses/CreateAddressScreen'
 import EditAddressScreen from '../components/Screens/Adresses/EditAddressScreen'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { Ionicons } from 'react-native-vector-icons'
 import CartScreen from '../components/Screens/CartScreen'
 import MyPaymentMethodsScreen from '../components/Screens/Payment/MyPaymentMethodsScreen'
+import PurchaseInAppScreen from '../components/Screens/PurchaseInAppScreen'
+import BackButton from '../components/BackButton'
+import HomeScreen from '../components/Screens/HomeScreen'
 
 const Tab = createBottomTabNavigator()
 
 const AppStack = () => {
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
+      screenOptions={({ route, navigation }) => ({
         tabBarActiveTintColor: 'red',
         tabBarInactiveTintColor: 'gray',
         tabBarStyle: [
@@ -48,10 +53,15 @@ const AppStack = () => {
           }
 
           return <Ionicons name={iconName} size={size} color={color} />
-        }
+        },
+        headerLeft: () => <BackButton navigation={navigation} />
       })}
     >
-      <Tab.Screen name="Home" component={ProductsPage} />
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ headerLeft: '' }}
+      />
       <Tab.Screen name="Pesquisar" component={ProductsPage} />
       <Tab.Screen name="Carrinho" component={CartScreen} />
       <Tab.Screen name="Perfil" component={ProfileScreen} />
@@ -88,6 +98,11 @@ const AppStack = () => {
       <Tab.Screen
         name="Pagamentos"
         component={MyPaymentMethodsScreen}
+        options={{ tabBarItemStyle: { display: 'none' } }}
+      />
+      <Tab.Screen
+        name="Pagar no aplicativo"
+        component={PurchaseInAppScreen}
         options={{ tabBarItemStyle: { display: 'none' } }}
       />
     </Tab.Navigator>

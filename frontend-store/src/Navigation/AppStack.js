@@ -1,27 +1,73 @@
 import React from 'react'
-import { createDrawerNavigator } from '@react-navigation/drawer'
-import CustomDrawer from '../components/CustomDrawer'
+import { Text, TouchableOpacity } from 'react-native'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { Ionicons } from 'react-native-vector-icons'
+
+// screen components
+import BackButton from '../components/BackButton'
 import MyProducts from '../components/Screens/Products/MyProducts'
 import EditProductScreen from '../components/Screens/Products/EditProductScreen'
 import AddProductScreen from '../components/Screens/Products/AddProductScreen'
+import LogoutComponent from '../components/LogoutComponent'
 
-const Drawer = createDrawerNavigator()
+const Tab = createBottomTabNavigator()
 
 const AppStack = () => {
   return (
-    <Drawer.Navigator drawerContent={props => <CustomDrawer {...props} />}>
-      <Drawer.Screen name="Meus Produtos" component={MyProducts} />
-      <Drawer.Screen
+    <Tab.Navigator
+      screenOptions={({ route, navigation }) => ({
+        tabBarActiveTintColor: 'red',
+        tabBarInactiveTintColor: 'gray',
+        tabBarStyle: [
+          {
+            display: 'flex'
+          },
+          null
+        ],
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName
+
+          switch (route.name) {
+            case 'Meus Produtos':
+              iconName = focused ? 'layers' : 'layers-outline'
+              break
+            case 'Home':
+              iconName = focused ? 'home' : 'home-outline'
+              break
+            case 'Perfil':
+              iconName = focused ? 'person' : 'person-outline'
+              break
+            case 'Sair':
+              iconName = focused ? 'exit' : 'exit-outline'
+              break
+
+            default:
+              iconName = 'ellipse-outline'
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />
+        },
+        headerLeft: () => <BackButton navigation={navigation} />
+      })}
+    >
+      <Tab.Screen
+        name="Home"
+        component={MyProducts}
+        options={{ headerLeft: '' }}
+      />
+      <Tab.Screen name="Meus Produtos" component={MyProducts} />
+      <Tab.Screen
         name="Editar Produto"
         component={EditProductScreen}
-        options={{ drawerItemStyle: { display: 'none' } }}
+        options={{ tabBarItemStyle: { display: 'none' } }}
       />
-      <Drawer.Screen
+      <Tab.Screen
         name="Adicionar Produto"
         component={AddProductScreen}
-        options={{ drawerItemStyle: { display: 'none' } }}
+        options={{ tabBarItemStyle: { display: 'none' } }}
       />
-    </Drawer.Navigator>
+      <Tab.Screen name="Sair" component={LogoutComponent} />
+    </Tab.Navigator>
   )
 }
 

@@ -15,7 +15,7 @@ import defaultUrl from '../../utils/defaultUrl'
 import { AuthContext } from '../../context/AuthContext'
 import { useFocusEffect } from '@react-navigation/native'
 
-const CartScreen = () => {
+const CartScreen = ({ navigation }) => {
   const defaultURL = defaultUrl()
   const [modalVisible, setModalVisible] = useState(false)
   const [itemqntt, setItemqntt] = useState(1)
@@ -82,6 +82,7 @@ const CartScreen = () => {
       </View>
     )
   }
+
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <Image source={{ uri: item.image }} style={styles.itemImage} />
@@ -120,6 +121,7 @@ const CartScreen = () => {
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={handleRefresh}
+                colors={['red']}
               />
             }
           />
@@ -150,7 +152,12 @@ const CartScreen = () => {
                   Escolha o método de pagamento
                 </Text>
                 <View style={{ flexDirection: 'row' }}>
-                  <TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setModalVisible(!modalVisible)
+                      navigation.navigate('Pagar no aplicativo', { valorTotal })
+                    }}
+                  >
                     <Text style={styles.modalButtons}>
                       Pagar pelo aplicativo
                     </Text>

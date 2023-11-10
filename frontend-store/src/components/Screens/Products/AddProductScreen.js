@@ -5,8 +5,10 @@ import {
   StyleSheet,
   Text,
   Alert,
-  TouchableOpacity
+  TouchableOpacity,
+  ScrollView
 } from 'react-native'
+import { Picker } from '@react-native-picker/picker'
 import axios from 'axios'
 import defaultUrl from '../../../utils/defaultUrl'
 import { AuthContext } from '../../../context/AuthContext'
@@ -20,6 +22,13 @@ const AddProductScreen = ({ navigation }) => {
   const [category, setCategory] = useState('')
   const [image, setImage] = useState('')
   const defaultURL = defaultUrl()
+  const predefinedCategories = [
+    'Informática e Eletrônicos',
+    'Moda e Beleza',
+    'Casa',
+    'Esporte',
+    'Lazer e entreterimento'
+  ]
 
   const createProduct = async () => {
     try {
@@ -41,6 +50,7 @@ const AddProductScreen = ({ navigation }) => {
       )
 
       if (response.status === 200) {
+        resetValues()
         Alert.alert('Success', 'Produto adicionado com sucesso!')
         navigation.navigate('Meus Produtos')
         console.log(response.data)
@@ -51,8 +61,17 @@ const AddProductScreen = ({ navigation }) => {
     }
   }
 
+  const resetValues = () => {
+    setTitle('')
+    setPrice('')
+    setDiscount('')
+    setDescription('')
+    setCategory('')
+    setImage('')
+  }
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.label}>Nome</Text>
       <TextInput
         style={styles.input}
@@ -89,12 +108,15 @@ const AddProductScreen = ({ navigation }) => {
       />
 
       <Text style={styles.label}>Categoria do produto</Text>
-      <TextInput
+      <Picker
         style={styles.input}
-        placeholder="Digite a categoria do produto"
-        value={category}
-        onChangeText={setCategory}
-      />
+        selectedValue={category}
+        onValueChange={itemValue => setCategory(itemValue)}
+      >
+        {predefinedCategories.map((cat, index) => (
+          <Picker.Item key={index} label={cat} value={cat} />
+        ))}
+      </Picker>
 
       <Text style={styles.label}>Imagem do produto</Text>
       <TextInput
@@ -115,7 +137,7 @@ const AddProductScreen = ({ navigation }) => {
           <Text style={styles.buttonText}>Adicionar Produto</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   )
 }
 

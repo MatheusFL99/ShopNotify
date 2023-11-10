@@ -73,7 +73,7 @@ const MyPaymentMethodsScreen = ({ navigation }) => {
           >
             <View style={styles.textContainer}>
               <Text style={styles.itemText}>{item.cardNumber}</Text>
-              <Text style={styles.itemDescription}>{item.cardName}</Text>
+              <Text style={styles.itemDescription}>{item.paymentName}</Text>
             </View>
           </TouchableOpacity>
         )}
@@ -81,7 +81,7 @@ const MyPaymentMethodsScreen = ({ navigation }) => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            colors={['#F00']}
+            colors={['red']}
           />
         }
       />

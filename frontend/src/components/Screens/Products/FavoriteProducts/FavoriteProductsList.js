@@ -1,12 +1,19 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react'
-import { FlatList, View, Text } from 'react-native'
+import React, { useState, useContext, useCallback } from 'react'
+import {
+  FlatList,
+  View,
+  Text,
+  RefreshControl,
+  Dimensions,
+  StyleSheet
+} from 'react-native'
 import axios from 'axios'
 import FavoriteProductCard from './FavoriteProductCard'
 import defaultUrl from '../../../../utils/defaultUrl'
 import { AuthContext } from '../../../../context/AuthContext'
 import { useFocusEffect } from '@react-navigation/native'
 
-export default function FavoriteProductsList() {
+const FavoriteProductsList = () => {
   const [products, setProducts] = useState([])
   const defaultURL = defaultUrl()
   const [searchQuery, setSearchQuery] = useState('')
@@ -47,24 +54,60 @@ export default function FavoriteProductsList() {
   if (products.length === 0) {
     return (
       <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-        <Text>Produtos adicionados aos favoritos</Text>
-        <Text>vão aparacer aqui.</Text>
+        <Text>Você não adicionou nenhum produto aos favoritos.</Text>
       </View>
     )
   }
 
   return (
-    <View>
+    <View style={styles.container}>
       <FlatList
         data={filteredProducts}
         keyExtractor={product => product._id}
         renderItem={({ item }) => <FavoriteProductCard {...item} />}
-        contentContainerStyle={{
-          paddingHorizontal: 15
-        }}
-        refreshing={refreshing}
-        onRefresh={fetchProducts}
+        contentContainerStyle={styles.listContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={['red']}
+          />
+        }
       />
     </View>
   )
 }
+
+const { width } = Dimensions.get('window')
+const cardMargin = 10
+const cardWidth = width - 2 * cardMargin
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1
+  },
+  searchInput: {
+    height: 50,
+    borderRadius: 10,
+    backgroundColor: 'white',
+    borderColor: 'gray',
+    borderWidth: 1,
+    margin: cardMargin,
+    padding: 10,
+    width: cardWidth
+  },
+  listContent: {
+    paddingHorizontal: cardMargin
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1
+  },
+  productCard: {
+    width: cardWidth,
+    marginVertical: 10
+  }
+})
+
+export default FavoriteProductsList

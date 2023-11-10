@@ -27,7 +27,7 @@ const PurchaseHistory = () => {
           Authorization: `Bearer ${userToken}`
         }
       })
-      setPurchases(response.data)
+      setPurchases(response.data.reverse())
     } catch (error) {
       console.error('Erro ao carregar histórico de compras:', error)
     } finally {
@@ -96,7 +96,11 @@ const PurchaseHistory = () => {
         keyExtractor={purchase => purchase._id}
         style={styles.container}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={['red']}
+          />
         }
       />
     </SafeAreaView>

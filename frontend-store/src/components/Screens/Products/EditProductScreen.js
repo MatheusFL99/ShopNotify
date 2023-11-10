@@ -7,6 +7,7 @@ import {
   Alert,
   Text
 } from 'react-native'
+import { Picker } from '@react-native-picker/picker'
 import axios from 'axios'
 import { AuthContext } from '../../../context/AuthContext'
 import defaultUrl from '../../../utils/defaultUrl'
@@ -21,6 +22,13 @@ const EditProductScreen = ({ route, navigation }) => {
   const [image, setImage] = useState('')
   const { storeToken } = useContext(AuthContext)
   const defaultURL = defaultUrl()
+  const predefinedCategories = [
+    'Informática e Eletrônicos',
+    'Moda e Beleza',
+    'Casa',
+    'Esporte',
+    'Lazer e entreterimento'
+  ]
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -110,12 +118,16 @@ const EditProductScreen = ({ route, navigation }) => {
         placeholder="Description"
       />
       <Text style={styles.label}>Categoria do Produto</Text>
-      <TextInput
+      <Picker
         style={styles.input}
-        value={category}
-        onChangeText={setCategory}
-        placeholder="Category"
-      />
+        selectedValue={category}
+        onValueChange={itemValue => setCategory(itemValue)}
+      >
+        {predefinedCategories.map((cat, index) => (
+          <Picker.Item key={index} label={cat} value={cat} />
+        ))}
+      </Picker>
+
       <Text style={styles.label}>URL da imagem do Produto</Text>
       <TextInput
         style={styles.input}

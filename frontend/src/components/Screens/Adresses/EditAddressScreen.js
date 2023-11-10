@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  Alert
+  Alert,
+  ScrollView
 } from 'react-native'
 import defaultUrl from '../../../utils/defaultUrl'
 import { AuthContext } from '../../../context/AuthContext'
@@ -45,7 +46,7 @@ const EditAddressScreen = ({ route, navigation }) => {
 
   const saveHandler = async () => {
     try {
-      const respnse = await axios.put(
+      const response = await axios.put(
         `${defaultURL}/address/edit/${addressId}`,
         {
           name,
@@ -62,10 +63,10 @@ const EditAddressScreen = ({ route, navigation }) => {
           }
         }
       )
-      if (respnse.status == 200) {
+      if (response.status == 200) {
         Alert.alert('Sucess', 'Endereço atualizado com sucesso!')
         navigation.navigate('Endereços')
-        console.log(respnse.data)
+        console.log(response.data)
       }
     } catch (err) {
       console.error('Erro ao atualizar endereço', err.response.data.message)
@@ -78,7 +79,7 @@ const EditAddressScreen = ({ route, navigation }) => {
   }, [addressId, userToken])
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>Nome do endereço</Text>
       <TextInput
         style={styles.input}
@@ -139,7 +140,7 @@ const EditAddressScreen = ({ route, navigation }) => {
           <Text style={styles.saveText}>Salvar</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   )
 }
 
