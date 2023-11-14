@@ -93,6 +93,11 @@ router.put(
   purchaseController.removeFromCart
 )
 router.get('/purchases/cart', verifyUser, purchaseController.getUserCart)
+router.get(
+  '/purchases/mysales',
+  verifyStore,
+  purchaseController.getStoreProductsSales
+)
 router.post(
   '/purchases/finalizepurchaseapp',
   verifyUser,

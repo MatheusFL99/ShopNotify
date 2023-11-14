@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   StyleSheet,
   View,
@@ -6,10 +6,54 @@ import {
   ScrollView,
   Image,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  FlatList
 } from 'react-native'
+import axios from 'axios'
+import defaultUrl from '../../utils/defaultUrl'
+
+const categories = [
+  {
+    name: 'Computação',
+    icon: require('../../../assets/images/TesteComputador.png')
+  },
+  { name: 'Moda', icon: require('../../../assets/images/testeModa.png') },
+  { name: 'Eletronicos', icon: require('../../../assets/images/teste8.png') },
+  {
+    name: 'Beleza',
+    icon: require('../../../assets/images/testeMaquiagem.png')
+  },
+  { name: 'Casa', icon: require('../../../assets/images/TesteCasa.png') }
+]
 
 const HomeScreen = ({ navigation }) => {
+  const [products, setProducts] = useState([])
+  const defaultURL = defaultUrl()
+  const [refreshing, setRefreshing] = useState(false)
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(`${defaultURL}/products/list`)
+      setProducts(response.data)
+      console.log(response.data)
+    } catch (error) {
+      console.error('Erro ao buscar os produtos:', error)
+    } finally {
+      setRefreshing(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  const latestProduct = products.sort(
+    (a, b) => new Date(b.date) - new Date(a.date)
+  )[0]
+  const navigateToSearchWithCategory = categoryName => {
+    navigation.navigate('Pesquisar', { categoryName })
+  }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.mapSection}>
@@ -25,85 +69,48 @@ const HomeScreen = ({ navigation }) => {
         <Text>Sua localização no mapa pode variar!</Text>
       </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.categoriesSection}
-      >
-        <TouchableOpacity style={styles.categoryItem}>
-          <Image
-            source={require('../../../assets/images/TesteComputador.png')}
-            style={styles.categoryIcon}
-          />
-          <Text>Computação</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.categoryItem}>
-          <Image
-            source={require('../../../assets/images/testeModa.png')}
-            style={styles.categoryIcon}
-          />
-          <Text>Moda</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.categoryItem}>
-          <Image
-            source={require('../../../assets/images/teste8.png')}
-            style={styles.categoryIcon}
-          />
-          <Text>Eletronicos</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.categoryItem}>
-          <Image
-            source={require('../../../assets/images/testeMaquiagem.png')}
-            style={styles.categoryIcon}
-          />
-          <Text>Beleza</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.categoryItem}>
-          <Image
-            source={require('../../../assets/images/TesteCasa.png')}
-            style={styles.categoryIcon}
-          />
-          <Text>Casa</Text>
-        </TouchableOpacity>
-      </ScrollView>
+      <View style={styles.categoriesSection}>
+        <FlatList
+          horizontal
+          data={categories}
+          keyExtractor={item => item._id}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.categoryItem}
+              onPress={() => navigateToSearchWithCategory(item.title)}
+            >
+              <Image source={item.icon} style={styles.categoryIcon} />
+              <Text>{item.name}</Text>
+            </TouchableOpacity>
+          )}
+          showsHorizontalScrollIndicator={false}
+          style={styles.categoriesSection}
+        />
+      </View>
 
       <View style={styles.offersSection}>
-        <Text style={styles.offersTitle}>Ofertas do Dia</Text>
-        {/* Este container irá segurar suas ofertas, assumindo que você vai iterar sobre um array de ofertas */}
-        {/* Coloque um FlatList ou ScrollView vertical aqui se houver muitas ofertas */}
-        <TouchableOpacity style={styles.offerItem}>
-          <Text style={styles.offerText}>R$ 49.90 OFF em Casa</Text>
-          <Image
-            source={require('../../../assets/images/teste22.png')}
-            style={styles.offerImage}
-          />
-          <Text style={styles.offerExpiration}>Termina em: 15 dias</Text>
-          <TouchableOpacity style={styles.offerButton}>
-            <Text style={styles.offerButtonText}>Eu quero!</Text>
+        <Text style={styles.offersTitle}>Oferta do Dia</Text>
+        {latestProduct && (
+          <TouchableOpacity style={styles.offerItem}>
+            <Text style={styles.offerText}>
+              {latestProduct.discount}% de desconto
+            </Text>
+            <Image
+              source={{ uri: latestProduct.image }}
+              style={styles.offerImage}
+            />
+            <Text style={styles.offerExpiration}>{latestProduct.title}</Text>
+            <Text style={styles.offersTitle}>
+              {latestProduct.finalPrice.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+              })}{' '}
+            </Text>
+            <TouchableOpacity style={styles.offerButton}>
+              <Text style={styles.offerButtonText}>Adicionar ao carrinho</Text>
+            </TouchableOpacity>
           </TouchableOpacity>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.offerItem}>
-          <Text style={styles.offerText}>R$ 13.99 OFF em Moda</Text>
-          <Image
-            source={require('../../../assets/images/testeM.png')}
-            style={styles.offerImage}
-          />
-          <Text style={styles.offerExpiration}>Termina em: 15 dias</Text>
-          <TouchableOpacity style={styles.offerButton}>
-            <Text style={styles.offerButtonText}>Eu quero!</Text>
-          </TouchableOpacity>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.offerItem}>
-          <Text style={styles.offerText}>R$ 100 OFF em Esporte</Text>
-          <Image
-            source={require('../../../assets/images/testeB.png')}
-            style={styles.offerImage}
-          />
-          <Text style={styles.offerExpiration}>Termina em: 15 dias</Text>
-          <TouchableOpacity style={styles.offerButton}>
-            <Text style={styles.offerButtonText}>Eu quero!</Text>
-          </TouchableOpacity>
-        </TouchableOpacity>
+        )}
         {/* Repita para outras ofertas */}
       </View>
     </ScrollView>
@@ -133,26 +140,13 @@ const styles = StyleSheet.create({
     height: windowHeight * 0.3, // 30% of the window height
     borderRadius: 10
   },
-  categoriesSection: {
-    paddingVertical: 20,
-    paddingLeft: 20,
-    paddingRight: 10
-  },
   categoryItem: {
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
     padding: 10,
     backgroundColor: '#ffffff',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5
+    borderRadius: 10
   },
   categoryIcon: {
     width: 50,

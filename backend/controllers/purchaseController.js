@@ -3,6 +3,7 @@ const getUserByToken = require('../helpers/get-user-by-token')
 const Product = require('../models/product')
 const User = require('../models/user')
 const Purchase = require('../models/purchase')
+const getStoreByToken = require('../helpers/get-store-by-token')
 
 module.exports = class purchaseController {
   //////// ADICIONAR PRODUTO AO CARRINHO //////////
@@ -140,18 +141,15 @@ module.exports = class purchaseController {
   }
 
   /////// RESGATAR PRODUTOS QUE FORAM VENDIDOS POR UMA LOJA //////////
-  static async getStoreProductsSold(req, res) {
+  static async getStoreProductsSales(req, res) {
     const token = getToken(req)
-    const store = await getUserByToken(token)
+    const store = await getStoreByToken(token)
 
     try {
       const products = await Product.find({ 'store._id': store._id })
       const productsSold = await Purchase.find({
         products: { $in: products }
-      }).populate({
-        path: 'products',
-        populate: { path: 'store' }
-      })
+      }).populate({ path: 'products' })
       res.status(200).json(productsSold)
     } catch (err) {
       res.status(500).json({ message: err })

@@ -12,6 +12,7 @@ import axios from 'axios'
 import ProductCard from './ProductCard'
 import defaultUrl from '../../../utils/defaultUrl'
 import { useFocusEffect } from '@react-navigation/native'
+import { useParams } from 'react-router-dom'
 
 const ProductsList = () => {
   const [products, setProducts] = useState([])

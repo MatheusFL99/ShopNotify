@@ -9,6 +9,8 @@ import MyProducts from '../components/Screens/Products/MyProducts'
 import EditProductScreen from '../components/Screens/Products/EditProductScreen'
 import AddProductScreen from '../components/Screens/Products/AddProductScreen'
 import LogoutComponent from '../components/LogoutComponent'
+import MySales from '../components/Screens/MySales'
+import HomeScreen from '../components/Screens/HomeScreen'
 
 const Tab = createBottomTabNavigator()
 
@@ -34,8 +36,8 @@ const AppStack = () => {
             case 'Home':
               iconName = focused ? 'home' : 'home-outline'
               break
-            case 'Perfil':
-              iconName = focused ? 'person' : 'person-outline'
+            case 'Minhas vendas':
+              iconName = focused ? 'cart' : 'cart-outline'
               break
             case 'Sair':
               iconName = focused ? 'exit' : 'exit-outline'
@@ -52,10 +54,11 @@ const AppStack = () => {
     >
       <Tab.Screen
         name="Home"
-        component={MyProducts}
+        component={HomeScreen}
         options={{ headerLeft: '' }}
       />
       <Tab.Screen name="Meus Produtos" component={MyProducts} />
+      <Tab.Screen name="Minhas vendas" component={MySales} />
       <Tab.Screen
         name="Editar Produto"
         component={EditProductScreen}
