@@ -16,6 +16,7 @@ import MyPaymentMethodsScreen from '../components/Screens/Payment/MyPaymentMetho
 import PurchaseInAppScreen from '../components/Screens/PurchaseInAppScreen'
 import BackButton from '../components/BackButton'
 import HomeScreen from '../components/Screens/HomeScreen'
+import AddPaymentMethodScreen from '../components/Screens/Payment/AddPaymentMethodScreen'
 
 const Tab = createBottomTabNavigator()
 
@@ -98,6 +99,11 @@ const AppStack = () => {
       <Tab.Screen
         name="Pagamentos"
         component={MyPaymentMethodsScreen}
+        options={{ tabBarItemStyle: { display: 'none' } }}
+      />
+      <Tab.Screen
+        name="Adicionar forma de pagamento"
+        component={AddPaymentMethodScreen}
         options={{ tabBarItemStyle: { display: 'none' } }}
       />
       <Tab.Screen

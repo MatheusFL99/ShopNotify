@@ -6,12 +6,14 @@ import {
   TouchableOpacity,
   FlatList,
   RefreshControl,
-  StyleSheet
+  StyleSheet,
+  Alert
 } from 'react-native'
 import axios from 'axios'
 import { useFocusEffect } from '@react-navigation/native'
 import { AuthContext } from '../../../context/AuthContext'
 import defaultUrl from '../../../utils/defaultUrl'
+import Icon from 'react-native-vector-icons/FontAwesome'
 
 const MyPaymentMethodsScreen = ({ navigation }) => {
   const [paymentMethods, setPaymentMethods] = useState([])
@@ -21,16 +23,15 @@ const MyPaymentMethodsScreen = ({ navigation }) => {
 
   const fetchUserPaymentMethods = async () => {
     try {
-      const response = axios.get(
+      const response = await axios.get(
         `${defaultURL}/paymentmethod/mypaymentmethods`,
         {
           headers: {
-            Authorization: `Bearer ${userToken}`
+            authorization: `Bearer ${userToken}`
           }
         }
       )
-      const data = response.data
-      setPaymentMethods(data)
+      setPaymentMethods(response.data)
     } catch (err) {
       console.error(
         'Erro ao resgatar métodos de pagamento do usuário',
@@ -38,6 +39,26 @@ const MyPaymentMethodsScreen = ({ navigation }) => {
       )
     } finally {
       setRefreshing(false)
+    }
+  }
+
+  const handleAddPaymentMethod = () => {
+    navigation.navigate('Adicionar forma de pagamento')
+  }
+
+  const deletePaymentMethod = async paymentId => {
+    const response = await axios.delete(
+      `${defaultURL}/paymentmethod/delete/${paymentId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${userToken}`
+        }
+      }
+    )
+
+    if (response.status === 200) {
+      Alert.alert('Sucesso', 'Método de pagamento deletado com sucesso')
+      handleRefresh()
     }
   }
 
@@ -58,25 +79,32 @@ const MyPaymentMethodsScreen = ({ navigation }) => {
         <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
           Métodos de pagamento
         </Text>
-        <TouchableOpacity style={styles.addIcon}>
+        <TouchableOpacity
+          style={styles.addIcon}
+          onPress={handleAddPaymentMethod}
+        >
           <Text style={{ fontSize: 24, fontWeight: 'bold' }}>+</Text>
         </TouchableOpacity>
       </View>
       <FlatList
         style={styles.flatListStyle}
         data={paymentMethods}
-        keyExtractor={item => item._id}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => editAddressHandler(item._id)}
-            style={styles.item}
-          >
+          <View style={styles.item}>
             <View style={styles.textContainer}>
+              <Text style={styles.itemText}>{item.titularName}</Text>
               <Text style={styles.itemText}>{item.cardNumber}</Text>
               <Text style={styles.itemDescription}>{item.paymentName}</Text>
             </View>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => deletePaymentMethod(item._id)}
+              style={styles.deleteButton}
+            >
+              <Icon name="trash" size={24} color="#333" />
+            </TouchableOpacity>
+          </View>
         )}
+        keyExtractor={item => item._id}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -114,9 +142,14 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
-    borderBottomWidth: 1,
-    borderColor: '#CCC'
+    padding: 25,
+    marginVertical: 10,
+    backgroundColor: '#F7F7F7',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 1
   },
   textContainer: {
     flex: 1,
@@ -124,11 +157,18 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    color: '#333'
   },
   itemDescription: {
     fontSize: 14,
-    color: '#CCC'
+    color: '#CCC',
+    color: '#666'
+  },
+  deleteButton: {
+    padding: 8,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })
 

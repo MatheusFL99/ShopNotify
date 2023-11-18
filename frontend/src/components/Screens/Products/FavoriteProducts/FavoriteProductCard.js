@@ -81,7 +81,6 @@ const FavoriteProductCard = ({
       )
       .then(res => {
         console.log('Produto adicionado aos favoritos')
-        console.log(res.data)
         setFavorited(true)
       })
       .catch(err => {
@@ -104,7 +103,6 @@ const FavoriteProductCard = ({
         }
       )
       .then(res => {
-        console.log(res.data)
         setFavorited(false)
         console.log('Produto removido dos favoritos!')
       })
@@ -130,7 +128,6 @@ const FavoriteProductCard = ({
       .then(res => {
         console.log('Produto adicionado ao carrinho!')
         Alert.alert('Produto adicionado ao carrinho!')
-        console.log(res.data)
       })
       .catch(err => {
         console.log(err.response.data)

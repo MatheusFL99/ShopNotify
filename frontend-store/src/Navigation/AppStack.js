@@ -1,5 +1,4 @@
 import React from 'react'
-import { Text, TouchableOpacity } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Ionicons } from 'react-native-vector-icons'
 
@@ -11,6 +10,7 @@ import AddProductScreen from '../components/Screens/Products/AddProductScreen'
 import LogoutComponent from '../components/LogoutComponent'
 import MySales from '../components/Screens/MySales'
 import HomeScreen from '../components/Screens/HomeScreen'
+import TesteGeoLoc from '../components/TesteGeoLoc'
 
 const Tab = createBottomTabNavigator()
 
@@ -67,6 +67,11 @@ const AppStack = () => {
       <Tab.Screen
         name="Adicionar Produto"
         component={AddProductScreen}
+        options={{ tabBarItemStyle: { display: 'none' } }}
+      />
+      <Tab.Screen
+        name="Teste geoloc"
+        component={TesteGeoLoc}
         options={{ tabBarItemStyle: { display: 'none' } }}
       />
       <Tab.Screen name="Sair" component={LogoutComponent} />

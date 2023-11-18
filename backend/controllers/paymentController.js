@@ -100,21 +100,17 @@ module.exports = class paymentController {
       res.status(422).json({ message: 'Método de pagamento não encontrado!' })
       return
     }
-    if (!user.paymentMethods.includes(paymentMethodId)) {
-      res.status(422).json({ message: 'Método de pagamento não encontrado!' })
-      return
-    }
 
     try {
-      const paymentMethod = await PaymentMethod.findById(paymentMethodId)
-      const userUpdated = await User.findByIdAndUpdate(
-        { _id: user._id },
-        {
-          $pull: { paymentMethods: paymentMethod._id },
-          new: true
-        }
+      const paymentMethodRemoved = await PaymentMethod.findByIdAndRemove(
+        paymentMethodId
       )
-      res.status(200).json({ message: 'Método de pagamento removido!' })
+      res
+        .status(200)
+        .json({
+          message: 'Método de pagamento removido!',
+          paymentMethodRemoved
+        })
     } catch (err) {
       res.status(500).json({ message: err })
       return

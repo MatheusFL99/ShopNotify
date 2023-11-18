@@ -12,7 +12,6 @@ import axios from 'axios'
 import ProductCard from './ProductCard'
 import defaultUrl from '../../../utils/defaultUrl'
 import { useFocusEffect } from '@react-navigation/native'
-import { useParams } from 'react-router-dom'
 
 const ProductsList = () => {
   const [products, setProducts] = useState([])
@@ -24,7 +23,6 @@ const ProductsList = () => {
     try {
       const response = await axios.get(`${defaultURL}/products/list`)
       setProducts(response.data)
-      console.log(response.data)
     } catch (error) {
       console.error('Erro ao buscar os produtos:', error)
     } finally {

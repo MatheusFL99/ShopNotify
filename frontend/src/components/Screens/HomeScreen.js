@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import {
   StyleSheet,
   View,
@@ -7,10 +7,14 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
-  FlatList
+  FlatList,
+  RefreshControl
 } from 'react-native'
 import axios from 'axios'
+import { useFocusEffect } from '@react-navigation/native'
 import defaultUrl from '../../utils/defaultUrl'
+import MapView, { Marker } from 'react-native-maps'
+import * as Location from 'expo-location'
 
 const categories = [
   {
@@ -28,6 +32,7 @@ const categories = [
 
 const HomeScreen = ({ navigation }) => {
   const [products, setProducts] = useState([])
+  const [location, setLocation] = useState(null)
   const defaultURL = defaultUrl()
   const [refreshing, setRefreshing] = useState(false)
 
@@ -35,7 +40,6 @@ const HomeScreen = ({ navigation }) => {
     try {
       const response = await axios.get(`${defaultURL}/products/list`)
       setProducts(response.data)
-      console.log(response.data)
     } catch (error) {
       console.error('Erro ao buscar os produtos:', error)
     } finally {
@@ -43,9 +47,37 @@ const HomeScreen = ({ navigation }) => {
     }
   }
 
-  useEffect(() => {
+  const handleLocationPermission = async () => {
+    const { granted } = await Location.requestForegroundPermissionsAsync()
+    if (granted) {
+      const { coords } = await Location.getCurrentPositionAsync()
+      setLocation(coords)
+    }
+  }
+
+  handleRefresh = () => {
+    setRefreshing(true)
     fetchProducts()
-  }, [])
+    handleLocationPermission()
+    const subscription = Location.watchPositionAsync(
+      {
+        accuracy: Location.Accuracy.Highest,
+        timeInterval: 1000,
+        distanceInterval: 1
+      },
+      newLocation => {
+        setLocation(newLocation.coords)
+      }
+    )
+
+    subscription.then(sub => sub.remove())
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      handleRefresh()
+    }, [])
+  )
 
   const latestProduct = products.sort(
     (a, b) => new Date(b.date) - new Date(a.date)
@@ -55,25 +87,50 @@ const HomeScreen = ({ navigation }) => {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          colors={['red']}
+        />
+      }
+    >
       <View style={styles.mapSection}>
-        <TouchableOpacity
-          style={styles.titleMap}
-          onPress={() => navigation.navigate('MapComponent')}
-        >
-          <Image
-            source={require('../../../assets/images/Mapa.png')}
-            style={styles.mapThumbnail}
-          />
-        </TouchableOpacity>
-        <Text>Sua localização no mapa pode variar!</Text>
+        {location ? (
+          <TouchableOpacity>
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: location.latitude,
+                longitude: location.longitude,
+                latitudeDelta: 0.005,
+                longitudeDelta: 0.005
+              }}
+            >
+              <Marker
+                coordinate={location}
+                title="Você está aqui"
+                description={`Latitude: ${location.latitude.toFixed(
+                  4
+                )}, Longitude: ${location.longitude.toFixed(4)}`}
+              />
+            </MapView>
+          </TouchableOpacity>
+        ) : (
+          <Text style={styles.loadingText}>Carregando mapa...</Text>
+        )}
       </View>
+      <Text style={styles.locationText}>
+        Sua localização no mapa pode variar!
+      </Text>
 
       <View style={styles.categoriesSection}>
         <FlatList
           horizontal
           data={categories}
-          keyExtractor={item => item._id}
+          keyExtractor={item => item.name}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.categoryItem}
@@ -130,14 +187,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
+  map: {
+    width: windowWidth,
+    height: windowHeight * 0.4,
+    alignSelf: 'center',
+    marginTop: 60,
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
+  },
   titleMap: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10
   },
   mapThumbnail: {
-    width: windowWidth - 40, // subtracting the padding
-    height: windowHeight * 0.3, // 30% of the window height
+    width: windowWidth - 40,
+    height: windowHeight * 0.3,
     borderRadius: 10
   },
   categoryItem: {

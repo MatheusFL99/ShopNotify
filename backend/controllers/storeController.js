@@ -159,4 +159,10 @@ module.exports = class storeController {
 
     res.status(200).json(store)
   }
+
+  /////////////// GET LOJAS ///////////////
+  static async getStores(req, res) {
+    const stores = await Store.find().select('-password')
+    res.status(200).json(stores)
+  }
 }

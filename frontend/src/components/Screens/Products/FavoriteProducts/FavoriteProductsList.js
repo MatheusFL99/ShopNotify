@@ -22,7 +22,6 @@ const FavoriteProductsList = () => {
 
   const fetchProducts = async () => {
     try {
-      setRefreshing(true)
       const response = await axios.get(`${defaultURL}/products/favorites`, {
         headers: {
           Authorization: `Bearer ${userToken}`

@@ -135,7 +135,9 @@ const CartScreen = ({ navigation }) => {
             </Text>
             <TouchableOpacity
               style={styles.proceedButton}
-              onPress={() => setModalVisible(true)}
+              onPress={() =>
+                navigation.navigate('Pagar no aplicativo', { valorTotal })
+              }
             >
               <Text style={styles.buttonText}>Concluir Compra</Text>
             </TouchableOpacity>
@@ -162,11 +164,11 @@ const CartScreen = ({ navigation }) => {
                       Pagar pelo aplicativo
                     </Text>
                   </TouchableOpacity>
-                  <TouchableOpacity>
+                  {/* <TouchableOpacity>
                     <Text style={styles.modalButtons}>
                       Pagar direto no local
                     </Text>
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
                 </View>
                 <TouchableOpacity
                   style={styles.cancelButton}

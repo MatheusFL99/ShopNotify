@@ -1,4 +1,4 @@
-import React, { useState, useContext, useCallback } from 'react'
+import React, { useState, useContext, useCallback, useEffect } from 'react'
 import {
   View,
   Text,
@@ -6,16 +6,21 @@ import {
   FlatList,
   StyleSheet,
   RefreshControl,
-  Image
+  Image,
+  Dimensions,
+  ScrollView
 } from 'react-native'
 import axios from 'axios'
 import defaultUrl from '../../utils/defaultUrl'
 import { AuthContext } from '../../context/AuthContext'
+import { BarChart, LineChart } from 'react-native-chart-kit'
 import { useFocusEffect } from '@react-navigation/native'
 import { MaterialIcons } from '@expo/vector-icons'
 
 const MySales = () => {
   const [sales, setSales] = useState([])
+  const [totalRevenue, setTotalRevenue] = useState(0)
+  const [totalProductsSold, setTotalProductsSold] = useState(0)
   const [refreshing, setRefreshing] = useState(false)
   const { storeToken } = useContext(AuthContext)
   const defaultURL = defaultUrl()
@@ -48,48 +53,114 @@ const MySales = () => {
     }, [storeToken])
   )
 
+  useEffect(() => {
+    let revenue = 0
+    let productsSold = 0
+
+    sales.forEach(sale => {
+      revenue += sale.products[0].price
+      productsSold += sale.products.length
+    })
+
+    setTotalRevenue(revenue)
+    setTotalProductsSold(productsSold)
+  }, [sales])
+
+  const revenueData = {
+    labels: ['Faturamento total'],
+    datasets: [{ data: [totalRevenue] }]
+  }
+
+  const productsSoldData = {
+    labels: ['Produtos vendidos'],
+    datasets: [{ data: [totalProductsSold] }]
+  }
+
   return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        data={sales}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Image
-              source={{ uri: item.products[0].image }}
-              style={styles.image}
-            />
-            <View style={styles.infoContainer}>
-              <Text style={styles.title}>{item.products[0].title}</Text>
-              <View style={styles.detailContainer}>
-                <MaterialIcons name="attach-money" size={18} color="green" />
-                <Text style={styles.price}>R$ {item.products[0].price}</Text>
-              </View>
-              <View style={styles.detailContainer}>
-                <MaterialIcons name="event" size={18} color="gray" />
-                <Text style={styles.date}>
-                  {new Date(item.date).toLocaleDateString('pt-BR', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric'
-                  })}
-                </Text>
+    <ScrollView style={{ flex: 1 }}>
+      <View style={styles.chartContainer}>
+        <Text style={styles.chartTitle}>Faturamento</Text>
+        <BarChart
+          data={revenueData}
+          width={Dimensions.get('window').width - 30}
+          height={220}
+          yAxisLabel={'$'}
+          chartConfig={{
+            backgroundColor: '#1cc910',
+            backgroundGradientFrom: '#eff3ff',
+            backgroundGradientTo: '#efefef',
+            decimalPlaces: 2,
+            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`
+          }}
+          style={styles.chart}
+        />
+      </View>
+
+      <View style={styles.chartContainer}>
+        <Text style={styles.chartTitle}>Número de produtos vendidos</Text>
+        <LineChart
+          data={productsSoldData}
+          width={Dimensions.get('window').width - 30}
+          height={220}
+          chartConfig={{
+            backgroundColor: '#1cc910',
+            backgroundGradientFrom: '#eff3ff',
+            backgroundGradientTo: '#efefef',
+            decimalPlaces: 0,
+            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`
+          }}
+          style={styles.chart}
+        />
+      </View>
+
+      <View style={styles.FlatListContainer}>
+        <Text style={styles.containertitle}>Histórico de vendas</Text>
+        <FlatList
+          data={sales}
+          style={styles.container}
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <Image
+                source={{ uri: item.products[0].image }}
+                style={styles.image}
+              />
+              <View style={styles.infoContainer}>
+                <Text style={styles.title}>{item.products[0].title}</Text>
+                <View style={styles.detailContainer}>
+                  <Text style={styles.price}>R$ {item.products[0].price}</Text>
+                </View>
+                <View style={styles.detailContainer}>
+                  <MaterialIcons name="event" size={18} color="gray" />
+                  <Text style={styles.date}>
+                    {new Date(item.date).toLocaleDateString('pt-BR', {
+                      day: '2-digit',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-        )}
-        keyExtractor={item => item._id}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
-      />
-    </SafeAreaView>
+          )}
+          keyExtractor={item => item._id}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
+        />
+      </View>
+    </ScrollView>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#f8f8f8',
+    paddingBottom: 20,
+    marginBottom: 20,
+    minHeight: '100%'
   },
   card: {
     flexDirection: 'row',
@@ -118,6 +189,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center'
   },
+  containertitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginBottom: 10,
+    marginLeft: 10
+  },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -132,12 +210,40 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: 'green',
-    marginLeft: 5
+    marginLeft: 3
   },
   date: {
     fontSize: 14,
     color: 'gray',
     marginLeft: 5
+  },
+  chartContainer: {
+    flex: 1,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 8,
+    padding: 10,
+    alignItems: 'center',
+    backgroundColor: '#f9f9f9',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3
+  },
+  chartTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5
+  },
+  chart: {
+    marginVertical: 8,
+    borderRadius: 8,
+    padding: 10,
+    alignItems: 'center'
   }
 })
 

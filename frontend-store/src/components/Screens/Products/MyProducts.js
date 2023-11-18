@@ -21,7 +21,7 @@ const MyProducts = ({ navigation }) => {
   const { storeToken } = useContext(AuthContext)
   const defaultURL = defaultUrl()
 
-  const fetchProducts = useCallback(async () => {
+  const fetchProducts = async () => {
     try {
       const response = await axios.get(`${defaultURL}/products/myproducts`, {
         headers: {
@@ -33,20 +33,21 @@ const MyProducts = ({ navigation }) => {
       setProducts(data)
     } catch (error) {
       console.error('Error fetching products:', error)
+    } finally {
+      setRefreshing(false)
     }
-  }, [storeToken])
+  }
+
+  const handleRefresh = () => {
+    setRefreshing(true)
+    fetchProducts()
+  }
 
   useFocusEffect(
     useCallback(() => {
-      fetchProducts()
-      return () => {}
-    }, [fetchProducts])
+      handleRefresh()
+    }, [storeToken])
   )
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true)
-    fetchProducts().then(() => setRefreshing(false))
-  }, [fetchProducts])
 
   const addProductHandler = () => {
     navigation.navigate('Adicionar Produto')
@@ -108,7 +109,7 @@ const MyProducts = ({ navigation }) => {
           )}
           keyExtractor={item => item._id}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
           }
         />
       </SafeAreaView>

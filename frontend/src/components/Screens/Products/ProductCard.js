@@ -82,7 +82,6 @@ const ProductCard = ({
       .then(res => {
         console.log('Produto adicionado aos favoritos!')
         setFavorited(true)
-        console.log(res.data)
       })
       .catch(err => {
         console.log(err.response.data)
@@ -106,7 +105,6 @@ const ProductCard = ({
       .then(res => {
         console.log('Produto removido dos favoritos!')
         setFavorited(false)
-        console.log(res.data)
       })
       .catch(err => {
         console.log(err.response.data)
@@ -130,7 +128,6 @@ const ProductCard = ({
       .then(res => {
         console.log('Produto adicionado ao carrinho!')
         Alert.alert('Produto adicionado ao carrinho!')
-        console.log(res.data)
       })
       .catch(err => {
         console.log(err.response.data)
