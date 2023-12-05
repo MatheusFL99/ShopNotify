@@ -2,6 +2,7 @@ const Store = require('../models/store')
 const bcrypt = require('bcryptjs')
 const createStoreToken = require('../helpers/create-store-token')
 const getToken = require('../helpers/get-token')
+const getStoreByToken = require('../helpers/get-store-by-token')
 const jwt = require('jsonwebtoken')
 
 module.exports = class storeController {
@@ -164,5 +165,86 @@ module.exports = class storeController {
   static async getStores(req, res) {
     const stores = await Store.find().select('-password')
     res.status(200).json(stores)
+  }
+
+  //////////////// EDITAR PERFIL DA LOJA ///////////////////
+  static async editProfile(req, res) {
+    const storeId = req.params.id
+    const { name, email, password, confirmpassword } = req.body
+
+    const store = await Store.findById(storeId)
+
+    // validações
+    if (!name) {
+      res.status(422).json({ message: 'O nome é obrigatório!' })
+      return
+    }
+
+    store.name = name
+
+    if (!email) {
+      res.status(422).json({ message: 'O e-mail é obrigatório!' })
+      return
+    }
+
+    const storeExists = await Store.findOne({ email: email })
+
+    if (store.email !== email && storeExists) {
+      res.status(422).json({ message: 'Esse email já está sendo utilizado.' })
+      return
+    }
+
+    store.email = email
+
+    if (password != confirmpassword) {
+      res
+        .status(422)
+        .json({ error: 'Senha e confirmação de senha precisam ser iguais' })
+      return
+    } else if (password == confirmpassword && password != null) {
+      const salt = await bcrypt.genSalt(12)
+      const reqPassword = req.body.password
+
+      const passwordHash = await bcrypt.hash(reqPassword, salt)
+
+      store.password = passwordHash
+    }
+
+    try {
+      const updatedStore = await Store.findOneAndUpdate(
+        { _id: store._id },
+        { $set: store },
+        { new: true }
+      )
+      res.json({
+        message: 'Usuário atualizado com sucesso!',
+        data: updatedStore
+      })
+    } catch (error) {
+      res.status(500).json({ message: error })
+    }
+  }
+
+  ////////////// ATUALIZAR LOCALIZAÇÃO DA LOJA ///////////////
+  static async updateLocation(req, res) {
+    const token = getToken(req)
+    const store = getStoreByToken(token)
+    const { longitude, latitude } = req.body
+    try {
+      const updatedStore = await Store.findByIdAndUpdate(
+        { _id: store._id },
+        {
+          location: {
+            type: 'Point',
+            coordinates: [longitude, latitude]
+          }
+        },
+        { new: true }
+      )
+      res.status(200).json(updatedStore)
+    } catch (err) {
+      res.status(500).json({ message: err })
+      return
+    }
   }
 }

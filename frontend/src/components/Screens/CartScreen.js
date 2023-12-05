@@ -126,7 +126,7 @@ const CartScreen = ({ navigation }) => {
             }
           />
           <View style={styles.footer}>
-            <Text>
+            <Text style={styles.totalText}>
               Total:{' '}
               {valorTotal.toLocaleString('pt-BR', {
                 style: 'currency',
@@ -231,12 +231,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'lightgray'
   },
   footer: {
-    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     padding: 15,
-    margin: 10
+
+    borderTopWidth: 0.5,
+    borderTopColor: 'lightgray'
+  },
+  totalText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 10
   },
   proceedButton: {
     padding: 15,

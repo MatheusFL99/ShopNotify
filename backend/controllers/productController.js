@@ -1,5 +1,5 @@
-const getStoreByToken = require('../helpers/get-store-by-token')
 const getToken = require('../helpers/get-token')
+const getStoreByToken = require('../helpers/get-store-by-token')
 const getUserByToken = require('../helpers/get-user-by-token')
 const Product = require('../models/product')
 const User = require('../models/user')
@@ -143,7 +143,7 @@ module.exports = class productController {
   /////////////// LISTAR PRODUTOS ///////////////
   static async listProducts(req, res) {
     try {
-      const products = await Product.find().sort({ createdAt: -1 })
+      const products = await Product.find()
       res.status(200).json(products)
     } catch (err) {
       res.status(500).json({ message: err })

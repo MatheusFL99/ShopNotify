@@ -14,13 +14,11 @@ import * as Location from 'expo-location'
 import axios from 'axios'
 import { useFocusEffect } from '@react-navigation/native'
 import { AuthContext } from '../../context/AuthContext'
-import { BarChart, LineChart } from 'react-native-chart-kit'
 import defaultUrl from '../../utils/defaultUrl'
 
 const HomeScreen = ({ navigation }) => {
   const [location, setLocation] = useState(null)
   const [products, setProducts] = useState([])
-  const [sales, setSales] = useState([])
   const [refreshing, setRefreshing] = useState(false)
   const { storeToken } = useContext(AuthContext)
   const defaultURL = defaultUrl()
@@ -37,21 +35,6 @@ const HomeScreen = ({ navigation }) => {
       setProducts(data)
     } catch (error) {
       console.error('Error fetching products:', error)
-    }
-  }
-
-  const fetchSales = async () => {
-    try {
-      const response = await axios.get(`${defaultURL}/purchases/mysales`, {
-        headers: {
-          Authorization: `Bearer ${storeToken}`
-        }
-      })
-      const data = response.data.reverse()
-      console.log('Vendas carregadas')
-      setSales(data)
-    } catch (error) {
-      console.error('Error fetching products:', error)
     } finally {
       setRefreshing(false)
     }
@@ -60,7 +43,6 @@ const HomeScreen = ({ navigation }) => {
   const handleRefresh = () => {
     setRefreshing(true)
     fetchProducts()
-    fetchSales()
   }
 
   useFocusEffect(
@@ -109,7 +91,7 @@ const HomeScreen = ({ navigation }) => {
     <ScrollView style={styles.container}>
       <View style={styles.container}>
         {location ? (
-          <TouchableOpacity onPress={handleTesteGeoLoc}>
+          <View>
             <MapView
               style={styles.map}
               initialRegion={{
@@ -127,13 +109,13 @@ const HomeScreen = ({ navigation }) => {
                 )}, Longitude: ${location.longitude.toFixed(4)}`}
               />
             </MapView>
-          </TouchableOpacity>
+          </View>
         ) : (
           <Text style={styles.loadingText}>Carregando mapa...</Text>
         )}
       </View>
       <Text style={styles.locationText}>
-        Sua localização no mapa pode variar!
+        Sua localização no mapa pode variar.
       </Text>
       <Text style={styles.title}>Meus Produtos</Text>
       <FlatList
@@ -150,7 +132,8 @@ const HomeScreen = ({ navigation }) => {
   )
 }
 
-const { width, height } = Dimensions.get('window')
+const windowWidth = Dimensions.get('window').width
+const windowHeight = Dimensions.get('window').height
 
 const styles = StyleSheet.create({
   container: {
@@ -164,11 +147,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#333'
   },
+  mapSection: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20
+  },
   map: {
-    width: width,
-    height: height * 0.4,
+    width: windowWidth * 0.99,
+    height: windowHeight * 0.4,
     alignSelf: 'center',
-    marginTop: 60,
+    marginTop: 0,
     borderRadius: 20,
     overflow: 'hidden',
     borderWidth: 1,
@@ -180,11 +168,10 @@ const styles = StyleSheet.create({
     elevation: 5
   },
   locationText: {
-    padding: 10,
     textAlign: 'center',
-    fontSize: 16,
-    color: '#666',
-    marginTop: 8
+    color: '#888888',
+    marginBottom: 20,
+    fontSize: 12
   },
   flatList: {
     paddingVertical: 10

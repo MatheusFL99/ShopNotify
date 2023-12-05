@@ -96,13 +96,13 @@ const MyProducts = ({ navigation }) => {
                   style={styles.editButton}
                   onPress={() => editProductHandler(item._id)}
                 >
-                  <Text style={styles.buttonText}>Edit</Text>
+                  <Text style={styles.buttonText}>Editar</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.deleteButton}
                   onPress={() => deleteProduct(item._id)}
                 >
-                  <Text style={styles.buttonText}>Delete</Text>
+                  <Text style={styles.buttonText}>Deletar</Text>
                 </TouchableOpacity>
               </View>
             </View>

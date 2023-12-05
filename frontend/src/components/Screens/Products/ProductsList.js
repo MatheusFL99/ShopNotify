@@ -22,7 +22,7 @@ const ProductsList = () => {
   const fetchProducts = async () => {
     try {
       const response = await axios.get(`${defaultURL}/products/list`)
-      setProducts(response.data)
+      setProducts(response.data.reverse())
     } catch (error) {
       console.error('Erro ao buscar os produtos:', error)
     } finally {

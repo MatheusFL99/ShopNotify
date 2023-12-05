@@ -13,12 +13,24 @@ const paymentController = require('../controllers/paymentController')
 router.post('/users/register', userController.register)
 router.post('/users/login', userController.login)
 router.get('/users/checkuser', userController.checkUser)
+router.post(
+  '/users/find-nearest-store',
+  verifyUser,
+  userController.findNearestStore
+)
 router.put('/users/edit/:id', verifyUser, userController.editProfile)
 router.get('/users/:id', userController.getUserById)
 
 ///////////////////////////////////////////////////////////////////////////////// rotas definidas para api lojas
 router.post('/stores/register', storeController.register)
 router.post('/stores/login', storeController.login)
+router.get('/stores/checkstore', storeController.checkStore)
+router.post(
+  '/stores/update-location',
+  verifyStore,
+  storeController.updateLocation
+)
+router.put('/stores/edit/:id', verifyStore, storeController.editProfile)
 
 ///////////////////////////////////////////////////////////////////////////////// rotas definidas para a api address
 router.post('/address/create', verifyUser, addressController.createAddress)

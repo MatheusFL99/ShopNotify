@@ -19,7 +19,7 @@ const AddProductScreen = ({ navigation }) => {
   const [price, setPrice] = useState('')
   const [discount, setDiscount] = useState('')
   const [description, setDescription] = useState('')
-  const [category, setCategory] = useState('')
+  const [category, setCategory] = useState('Informática e Eletrônicos')
   const [image, setImage] = useState('')
   const defaultURL = defaultUrl()
   const predefinedCategories = [
@@ -57,7 +57,7 @@ const AddProductScreen = ({ navigation }) => {
       }
     } catch (error) {
       console.error('Error creating product:', error.response.data)
-      Alert.alert('Error', 'Erro ao atualizar o produto.')
+      Alert.alert('Error', 'Erro ao adicionar o produto.')
     }
   }
 

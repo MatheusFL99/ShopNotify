@@ -19,10 +19,10 @@ const WelcomePage = () => {
           <Ionicons
             name="mail"
             size={24}
-            color="white"
+            color="#836FFF"
             style={styles.buttonIcon}
           />
-          <Text style={styles.buttonText}>Entrar com CNPJ</Text>
+          <Text style={styles.buttonText}>Entrar com email</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -66,7 +66,10 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    color: '#836FFF'
+    color: '#836FFF',
+    fontWeight: 'bold',
+    paddingLeft: 60,
+    width: '100%'
   }
 })
 

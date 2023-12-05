@@ -312,10 +312,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 9999,
     padding: 12,
-    width: '83.333%', // 10/12 in percentage
+    width: '83.333%',
     alignSelf: 'center',
     marginTop: 20,
-    backgroundColor: 'black'
+    backgroundColor: 'red'
   },
   addToCartText: {
     fontSize: 16,

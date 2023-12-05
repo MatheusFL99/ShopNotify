@@ -1,4 +1,5 @@
 const User = require('../models/user')
+const Store = require('../models/store')
 const bcrypt = require('bcryptjs')
 const createUserToken = require('../helpers/create-user-token')
 const getToken = require('../helpers/get-token')
@@ -184,5 +185,23 @@ module.exports = class UserController {
     }
 
     res.status(200).json({ user })
+  }
+
+  /////////////// ENCONTRAR LOJA MAIS PROXIMA DO USUÁRIO ///////////////
+  static async findNearestStore(req, res) {
+    const { longitude, latitude } = req.body
+
+    const stores = await Store.find({
+      location: {
+        $near: {
+          $geometry: {
+            type: 'Point',
+            coordinates: [longitude, latitude]
+          }
+        }
+      }
+    })
+
+    res.status(200).json({ stores })
   }
 }

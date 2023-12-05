@@ -23,12 +23,13 @@ const storeSchema = new mongoose.Schema({
       ref: 'Product'
     }
   ],
-  coupons: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Coupon'
+  location: {
+    type: { type: String, default: 'Point' },
+    coordinates: {
+      type: [Number], // formato [longitude, latitude]
+      index: '2dsphere'
     }
-  ]
+  }
 })
 
 const Store = mongoose.model('Store', storeSchema)

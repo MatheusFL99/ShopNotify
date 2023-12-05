@@ -24,30 +24,6 @@ const WelcomePage = () => {
           />
           <Text style={styles.buttonText}>Entrar com E-mail</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: '#3b5998' }]}
-          onPress={() => console.log('Login com Facebook')}
-        >
-          <FontAwesome
-            name="facebook"
-            size={24}
-            color="white"
-            style={styles.buttonIcon}
-          />
-          <Text style={styles.buttonText}>Entrar com Facebook</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: '#db4a39' }]}
-          onPress={() => console.log('Login com Google')}
-        >
-          <AntDesign
-            name="google"
-            size={24}
-            color="white"
-            style={styles.buttonIcon}
-          />
-          <Text style={styles.buttonText}>Entrar com Google</Text>
-        </TouchableOpacity>
       </View>
     </View>
   )

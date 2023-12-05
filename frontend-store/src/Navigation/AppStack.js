@@ -11,6 +11,8 @@ import LogoutComponent from '../components/LogoutComponent'
 import MySales from '../components/Screens/MySales'
 import HomeScreen from '../components/Screens/HomeScreen'
 import TesteGeoLoc from '../components/TesteGeoLoc'
+import ProfileScreen from '../components/Screens/ProfileScreen'
+import EditProfileScreen from '../components/Screens/EditProfileScreen'
 
 const Tab = createBottomTabNavigator()
 
@@ -18,7 +20,7 @@ const AppStack = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route, navigation }) => ({
-        tabBarActiveTintColor: 'red',
+        tabBarActiveTintColor: '#836FFF',
         tabBarInactiveTintColor: 'gray',
         tabBarStyle: [
           {
@@ -36,11 +38,11 @@ const AppStack = () => {
             case 'Home':
               iconName = focused ? 'home' : 'home-outline'
               break
-            case 'Minhas vendas':
+            case 'Minhas Vendas':
               iconName = focused ? 'cart' : 'cart-outline'
               break
-            case 'Sair':
-              iconName = focused ? 'exit' : 'exit-outline'
+            case 'Perfil':
+              iconName = focused ? 'person' : 'person-outline'
               break
 
             default:
@@ -58,7 +60,8 @@ const AppStack = () => {
         options={{ headerLeft: '' }}
       />
       <Tab.Screen name="Meus Produtos" component={MyProducts} />
-      <Tab.Screen name="Minhas vendas" component={MySales} />
+      <Tab.Screen name="Minhas Vendas" component={MySales} />
+      <Tab.Screen name="Perfil" component={ProfileScreen} />
       <Tab.Screen
         name="Editar Produto"
         component={EditProductScreen}
@@ -74,7 +77,11 @@ const AppStack = () => {
         component={TesteGeoLoc}
         options={{ tabBarItemStyle: { display: 'none' } }}
       />
-      <Tab.Screen name="Sair" component={LogoutComponent} />
+      <Tab.Screen
+        name="Editar Perfil"
+        component={EditProfileScreen}
+        options={{ tabBarItemStyle: { display: 'none' } }}
+      />
     </Tab.Navigator>
   )
 }

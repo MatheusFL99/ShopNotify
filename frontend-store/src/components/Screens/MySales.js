@@ -13,7 +13,7 @@ import {
 import axios from 'axios'
 import defaultUrl from '../../utils/defaultUrl'
 import { AuthContext } from '../../context/AuthContext'
-import { BarChart, LineChart } from 'react-native-chart-kit'
+import { PieChart } from 'react-native-chart-kit'
 import { useFocusEffect } from '@react-navigation/native'
 import { MaterialIcons } from '@expo/vector-icons'
 
@@ -32,16 +32,14 @@ const MySales = () => {
           Authorization: `Bearer ${storeToken}`
         }
       })
-      const data = response.data.reverse()
-      console.log('Fetched Data:', data)
-      setSales(data)
+      console.log('Fetched Data:', response.data)
+      setSales(response.data.reverse())
     } catch (error) {
       console.error('Error fetching products:', error)
     } finally {
       setRefreshing(false)
     }
   }
-
   const handleRefresh = () => {
     setRefreshing(true)
     fetchSales()
@@ -58,7 +56,7 @@ const MySales = () => {
     let productsSold = 0
 
     sales.forEach(sale => {
-      revenue += sale.products[0].price
+      revenue += sale.products.reduce((acc, product) => acc + product.price, 0)
       productsSold += sale.products.length
     })
 
@@ -66,52 +64,44 @@ const MySales = () => {
     setTotalProductsSold(productsSold)
   }, [sales])
 
-  const revenueData = {
-    labels: ['Faturamento total'],
-    datasets: [{ data: [totalRevenue] }]
-  }
-
-  const productsSoldData = {
-    labels: ['Produtos vendidos'],
-    datasets: [{ data: [totalProductsSold] }]
+  const chartConfig = {
+    backgroundColor: '#1cc910',
+    backgroundGradientFrom: '#eff3ff',
+    backgroundGradientTo: '#efefef',
+    decimalPlaces: 2,
+    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    fromZero: true
   }
 
   return (
     <ScrollView style={{ flex: 1 }}>
       <View style={styles.chartContainer}>
         <Text style={styles.chartTitle}>Faturamento</Text>
-        <BarChart
-          data={revenueData}
+        <PieChart
+          data={[
+            {
+              name: 'Faturamento',
+              amount: totalRevenue,
+              color: 'red',
+              legendFontColor: '#7F7F7F',
+              legendFontSize: 10
+            },
+            {
+              name: 'Produtos Vendidos',
+              amount: totalProductsSold,
+              color: 'blue',
+              legendFontColor: '#7F7F7F',
+              legendFontSize: 10
+            }
+          ]}
           width={Dimensions.get('window').width - 30}
           height={220}
-          yAxisLabel={'$'}
-          chartConfig={{
-            backgroundColor: '#1cc910',
-            backgroundGradientFrom: '#eff3ff',
-            backgroundGradientTo: '#efefef',
-            decimalPlaces: 2,
-            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`
-          }}
-          style={styles.chart}
-        />
-      </View>
-
-      <View style={styles.chartContainer}>
-        <Text style={styles.chartTitle}>Número de produtos vendidos</Text>
-        <LineChart
-          data={productsSoldData}
-          width={Dimensions.get('window').width - 30}
-          height={220}
-          chartConfig={{
-            backgroundColor: '#1cc910',
-            backgroundGradientFrom: '#eff3ff',
-            backgroundGradientTo: '#efefef',
-            decimalPlaces: 0,
-            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`
-          }}
-          style={styles.chart}
+          chartConfig={chartConfig}
+          accessor={'amount'}
+          backgroundColor={'transparent'}
+          paddingLeft={'15'}
+          absolute
         />
       </View>
 

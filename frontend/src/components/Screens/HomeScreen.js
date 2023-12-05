@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useContext, useMemo } from 'react'
 import {
   StyleSheet,
   View,
@@ -8,6 +8,7 @@ import {
   Dimensions,
   TouchableOpacity,
   FlatList,
+  Alert,
   RefreshControl
 } from 'react-native'
 import axios from 'axios'
@@ -15,6 +16,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import defaultUrl from '../../utils/defaultUrl'
 import MapView, { Marker } from 'react-native-maps'
 import * as Location from 'expo-location'
+import { AuthContext } from '../../context/AuthContext'
 
 const categories = [
   {
@@ -33,13 +35,14 @@ const categories = [
 const HomeScreen = ({ navigation }) => {
   const [products, setProducts] = useState([])
   const [location, setLocation] = useState(null)
+  const { userToken } = useContext(AuthContext)
   const defaultURL = defaultUrl()
   const [refreshing, setRefreshing] = useState(false)
 
   const fetchProducts = async () => {
     try {
       const response = await axios.get(`${defaultURL}/products/list`)
-      setProducts(response.data)
+      setProducts(response.data.reverse())
     } catch (error) {
       console.error('Erro ao buscar os produtos:', error)
     } finally {
@@ -53,6 +56,29 @@ const HomeScreen = ({ navigation }) => {
       const { coords } = await Location.getCurrentPositionAsync()
       setLocation(coords)
     }
+  }
+
+  const addToCart = async () => {
+    const productId = latestProduct._id
+    await axios
+      .put(
+        `${defaultURL}/purchases/addtocart`,
+        {
+          productId: productId
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`
+          }
+        }
+      )
+      .then(res => {
+        console.log('Produto adicionado ao carrinho!')
+        Alert.alert('Produto adicionado ao carrinho!')
+      })
+      .catch(err => {
+        console.log(err.response.data)
+      })
   }
 
   handleRefresh = () => {
@@ -79,12 +105,10 @@ const HomeScreen = ({ navigation }) => {
     }, [])
   )
 
-  const latestProduct = products.sort(
-    (a, b) => new Date(b.date) - new Date(a.date)
-  )[0]
-  const navigateToSearchWithCategory = categoryName => {
-    navigation.navigate('Pesquisar', { categoryName })
-  }
+  const latestProduct = useMemo(
+    () => products.sort((a, b) => new Date(b.date) - new Date(a.date))[0],
+    [products]
+  )
 
   return (
     <ScrollView
@@ -93,13 +117,13 @@ const HomeScreen = ({ navigation }) => {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={handleRefresh}
-          colors={['red']}
+          colors={['#ff5252']}
         />
       }
     >
       <View style={styles.mapSection}>
         {location ? (
-          <TouchableOpacity>
+          <View>
             <MapView
               style={styles.map}
               initialRegion={{
@@ -117,13 +141,13 @@ const HomeScreen = ({ navigation }) => {
                 )}, Longitude: ${location.longitude.toFixed(4)}`}
               />
             </MapView>
-          </TouchableOpacity>
+          </View>
         ) : (
           <Text style={styles.loadingText}>Carregando mapa...</Text>
         )}
       </View>
       <Text style={styles.locationText}>
-        Sua localização no mapa pode variar!
+        Sua localização no mapa pode variar.
       </Text>
 
       <View style={styles.categoriesSection}>
@@ -134,7 +158,7 @@ const HomeScreen = ({ navigation }) => {
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.categoryItem}
-              onPress={() => navigateToSearchWithCategory(item.title)}
+              onPress={() => navigation.navigate('Pesquisar')}
             >
               <Image source={item.icon} style={styles.categoryIcon} />
               <Text>{item.name}</Text>
@@ -163,7 +187,7 @@ const HomeScreen = ({ navigation }) => {
                 currency: 'BRL'
               })}{' '}
             </Text>
-            <TouchableOpacity style={styles.offerButton}>
+            <TouchableOpacity style={styles.offerButton} onPress={addToCart}>
               <Text style={styles.offerButtonText}>Adicionar ao carrinho</Text>
             </TouchableOpacity>
           </TouchableOpacity>
@@ -183,15 +207,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5'
   },
   mapSection: {
-    padding: 20,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginTop: 20
   },
   map: {
-    width: windowWidth,
+    width: windowWidth * 0.99,
     height: windowHeight * 0.4,
     alignSelf: 'center',
-    marginTop: 60,
+    marginTop: 0,
     borderRadius: 20,
     overflow: 'hidden',
     borderWidth: 1,
@@ -211,6 +235,12 @@ const styles = StyleSheet.create({
     width: windowWidth - 40,
     height: windowHeight * 0.3,
     borderRadius: 10
+  },
+  locationText: {
+    textAlign: 'center',
+    color: '#888888',
+    marginBottom: 20,
+    fontSize: 12
   },
   categoryItem: {
     alignItems: 'center',
@@ -264,7 +294,7 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   offerButton: {
-    backgroundColor: '#ff5252',
+    backgroundColor: 'red',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center'
